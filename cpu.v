@@ -27,7 +27,7 @@ module cpu(
     wire [2:0] ULA_c; // ULA controller
 
     // Controllers for muxes
-    wire M_WREG;
+    wire [1:0] M_WREG;
     wire[1:0] M_ULAA;
     wire[1:0] M_ULAB;
     wire[2:0] M_PC_src;
@@ -239,5 +239,29 @@ module cpu(
         PC_in
     );
 
+    wire rst_out;
+    wire [5:0] FUNCT;
+
+    Control_unit UnidadeDeControle(
+            clk,
+            reset,
+            Of,
+            Lt,
+            Gt,
+            OPCODE,
+            FUNCT,
+            PC_w,
+            MEM_w,
+            IR_w,
+            A_out,
+            B_out,
+            M_WREG,
+            Mux_addr,
+            ULA_c,
+            M_PC_src,
+            M_WD,
+            rst_out
+    );
+    
 
 endmodule

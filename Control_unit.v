@@ -42,7 +42,7 @@ module Control_unit (
 // variáveis
 
 reg [5:0] estados;
-reg [2:0] COUNTER;
+reg [4:0] COUNTER;
 
 // parâmetros dos estados
 
@@ -59,11 +59,11 @@ initial begin
     rst_out = 1'b1;
 end
 always @(posedge clk) begin
-    if (reset == 1'b') begin
+    if (reset == 1'b1) begin
         if (estados != resetado) begin
+		  
             estados = resetado;
-            // resetando todos sinais
-            PCWrite = 1d'0;
+            PCWrite = 1'd0;
             MemWrite = 1'd0;
             MemRead = 1'd0;
             IRWrite = 1'd0;
@@ -79,5 +79,6 @@ always @(posedge clk) begin
         end
     end
 end
+
 
 endmodule
