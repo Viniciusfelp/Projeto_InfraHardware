@@ -58,7 +58,7 @@ parameter R_TYPE = 6'd0;
 parameter RESET = 6'b111111 ;
 
 //functs
-parameter ADD = 5'd32;
+parameter ADD = 6'd32;
 
 initial begin
     //227 no reg 29
@@ -171,15 +171,15 @@ always @(posedge clk) begin
                 end   
                 else if (COUNTER == 5'd5) begin
                     // escreve no ALUOut e nos A e B
-                    case (OPCODE) begin
+                    case (OPCODE) 
                         R_TYPE: begin
-                            case (funct) begin
+                            case (funct) 
                                 ADD: begin
                                     estados = ADD;
                                 end
-                            end
+                            endcase
                         end
-                    end
+                    endcase
                     PCWrite = 1'd0;
                     MemWrite = 1'd0; 
                     MemRead = 1'd0;
