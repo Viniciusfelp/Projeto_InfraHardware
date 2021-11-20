@@ -53,7 +53,7 @@ parameter decode = 6'd2;
 
 //opcodes
 parameter ADD = 6'd0;
-
+parameter RESET = 6'b111111 ;
 initial begin
     //227 no reg 29
     rst_out = 1'b1;
@@ -62,21 +62,60 @@ always @(posedge clk) begin
     if (reset == 1'b1) begin
         if (estados != resetado) begin
 		  
+            estados = fetch;
+            PCWrite = 1'd0;
+            MemWrite = 1'd0;
+            MemRead = 1'd0;
+            IRWrite = 1'd1;
+            ALUSrcA = 2'd0;
+            ALUSrcB = 2'd0;
+            RegWriteMUX = 2'b01;
+            MuxAddr = 3'd0;
+            ALUControl = 3'd0;
+            PCSrc = 3'd0;
+            WriteDataCtrl = 4'b1010;
+            COUNTER = 3'd0;
+            rst_out = 1'd1;
+        end
+        else begin
             estados = resetado;
             PCWrite = 1'd0;
             MemWrite = 1'd0;
             MemRead = 1'd0;
-            IRWrite = 1'd0;
+            IRWrite = 1'd1;
             ALUSrcA = 2'd0;
             ALUSrcB = 2'd0;
-            RegWriteMUX = 2'd0;
+            RegWriteMUX = 2'b01;
             MuxAddr = 3'd0;
             ALUControl = 3'd0;
             PCSrc = 3'd0;
-            WriteDataCtrl = 4'd0;
+            WriteDataCtrl = 4'b1010;
             COUNTER = 3'd0;
-            
+            rst_out = 1'd1;
         end
+    end
+    else begin
+        case (estados)
+            fetch: begin
+                if (COUNTER == 5'd0 || COUNTER == 5'd1 || COUNTER == 5'd2) begin
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    MemWrite = 1'd0; 
+                    MemRead = 1'd1;  ///
+                    IRWrite = 1'd1;
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'b01;  ///
+                    RegWriteMUX = 2'b01;
+                    MuxAddr = 3'd0;   ///
+                    ALUControl = 3'b001;  ///
+                    PCSrc = 3'd0;  ///
+                    WriteDataCtrl = 4'b1010;
+                    COUNTER = COUNTER + 1;
+                    rst_out = 1'd0;
+                end
+            end
+        
+        endcase
     end
 end
 

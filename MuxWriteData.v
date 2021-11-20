@@ -11,10 +11,10 @@ module MuxWriteData (
   input  wire [31:0] SaidaShiftL16,
   input  wire [31:0] SaidaLT,
 
-  output wire [31:0] saidaMuxWriteData
+  output reg [31:0] saidaMuxWriteData
 );
 
-  parameter valor227 = 32'd227; // 255 em decimal
+  parameter valor227 = 32'd227; // 227 em decimal
 
   reg [31:0] auxiliar1;
   reg [31:0] auxiliar2;
@@ -25,7 +25,7 @@ module MuxWriteData (
       ? ((WriteDataCtrl[0]) ? SaidaMDR : valorResultadoAluOut)
       : ((WriteDataCtrl[0]) ? MDR15Concatenated : MDR7Concatenated)
     );
-    auxiliar2 = ((WriteDataCtrl[1]) ? ((WriteDataCtrl[0] ? SaidaRegDesl : SaidaLO)
+    auxiliar2 = ((WriteDataCtrl[1]) ? ((WriteDataCtrl[0]) ? SaidaRegDesl : SaidaLO)
       : ((WriteDataCtrl[0]) ? SaidaALU : SaidaHI));
     auxiliar3 = WriteDataCtrl[0] ? SaidaLT : SaidaShiftL16;
     saidaMuxWriteData = ((WriteDataCtrl[3]) ? (auxiliar3) : (WriteDataCtrl[2] ? auxiliar2 : auxiliar1));

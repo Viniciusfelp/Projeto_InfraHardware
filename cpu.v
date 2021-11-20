@@ -46,14 +46,16 @@ module cpu(
 
     // Data wires with 32 bits
 
-    wire[31:0] ULA_out;
+    wire[31:0] ULULAA_out
+    ;
     wire[31:0] PC_out;
     wire[31:0] MEM_in;
     wire[31:0] MEM_to_IR; 
     wire[31:0] RB_to_A; // Banco de registradores para o registrador A
     wire[31:0] RB_to_B; // Banco de registradores para o registrador B
-    wire[31:0] A_out;
-    wire[31:0] B_out;
+    wire[31:0] ULAA_out
+    ;
+    wire[31:0] ULAB_out;
     wire[31:0] SXTND_out; // Sign extend 16 to 32
     wire[31:0] SL2_out; // Saida do shift left 2 
     wire[31:0] ALUOut_out;
@@ -83,7 +85,8 @@ module cpu(
     MuxMemoria Mux_MEM_(
         Mux_addr,
         PC_out,
-        ULA_out,
+        ULULAA_out
+        ,
         ALUOut_out,
         MEM_addr
     );
@@ -136,7 +139,8 @@ module cpu(
         ALUOut_out,
         MemDR_out,
         HI_out,
-        ULA_out,
+        ULULAA_out
+        ,
         LO_out,
         RegDesl_out, //Saida do registrador de deslocamento
         ShiftL16_out, // implementar shiftLeft16
@@ -160,7 +164,8 @@ module cpu(
         reset,
         AB_w,
         RB_to_A,
-        A_out
+        ULAA_out
+        
     );
 
     Registrador B_(
@@ -168,7 +173,7 @@ module cpu(
         reset,
         AB_w,
         RB_to_B,
-        B_out
+        ULAB_out
     );
 
     SignExtend16to32 SXTND_(
@@ -186,24 +191,27 @@ module cpu(
     MuxRegA M_ULAA_(
         M_ULAA,
         PC_out,
-        A_out,
-        B_out
+        ULAA_out
+        ,
+        ULAB_out
     );
 
     //Multiplexador que define o valor de B
     MUXUlaB M_ULAB_(
         M_ULAB,
-        B_out,
+        ULAB_out,
         SXTND_out,
         SL2_out,
-        ULAB_out
+        ULAULAB_out
     );
 
     ula32 ULA_(
-        ULAA_out,
-        ULAB_out,
+        ULAULAA_out
+        ,
+        ULAULAB_out,
         ULA_c,
-        ULA_out,
+        ULULAA_out
+        ,
         Of,
         Ng,
         Zero,
@@ -216,7 +224,8 @@ module cpu(
         clk,
         reset,
         ALUOut_w,
-        ULA_out,
+        ULULAA_out
+        ,
         ALUOut_out
     );
 
@@ -224,14 +233,16 @@ module cpu(
         clk,
         reset,
         EPC_w,
-        ULA_out,
+        ULULAA_out
+        ,
         EPC_out
     );
 
     // Multiplexador que define o valor do PC
     Mux_PC_src M_PC_src_(
         M_PC_src,
-        ULA_out,
+        ULULAA_out
+        ,
         ALUOut_out,
         jump,
         tratamento,
@@ -239,7 +250,6 @@ module cpu(
         PC_in
     );
 
-    wire rst_out;
     wire [5:0] FUNCT;
 
     Control_unit UnidadeDeControle(
@@ -253,14 +263,14 @@ module cpu(
             PC_w,
             MEM_w,
             IR_w,
-            A_out,
-            B_out,
+            ULAA_out,
+            ULAB_out,
             M_WREG,
             Mux_addr,
             ULA_c,
             M_PC_src,
             M_WD,
-            rst_out
+            reset
     );
     
 
