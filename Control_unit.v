@@ -46,8 +46,38 @@ reg [2:0] COUNTER;
 
 // parâmetros dos estados
 
+parameter resetado = 6'd0;
+parameter fetch = 6'd1;
+parameter decode = 6'd2;
+
+
+//opcodes
+parameter ADD = 6'd0;
+
+initial begin
+    //227 no reg 29
+    rst_out = 1'b1;
+end
 always @(posedge clk) begin
-    
+    if (reset == 1'b') begin
+        if (estados != resetado) begin
+            estados = resetado;
+            // resetando todos sinais
+            PCWrite = 1d'0;
+            MemWrite = 1'd0;
+            MemRead = 1'd0;
+            IRWrite = 1'd0;
+            ALUSrcA = 2'd0;
+            ALUSrcB = 2'd0;
+            RegWriteMUX = 2'd0;
+            MuxAddr = 3'd0;
+            ALUControl = 3'd0;
+            PCSrc = 3'd0;
+            WriteDataCtrl = 4'd0;
+            COUNTER = 3'd0;
+            
+        end
+    end
 end
 
 endmodule
