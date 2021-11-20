@@ -66,7 +66,7 @@ module cpu(
         reset,
         PC_w,
         PC_in,
-        PC_Out
+        PC_out
     );
 
     MuxMemoria Mux_MEM_(
@@ -147,7 +147,12 @@ module cpu(
         SL2_out
     );
 
-    //MUXALU_src_A
+    MuxRegA M_ULAA_(
+        M_ULAA,
+        PC_out,
+        A_out,
+        B_out
+    );
 
     MUXUlaB M_ULAB_(
         M_ULAB,
@@ -194,28 +199,6 @@ module cpu(
         tratamento,
         EPC_out,
         PC_in
-    );
-
-    ctrl_unit CTRL_(
-        clk,
-        reset,
-        Of,
-        Ng,
-        Zero,
-        Eq,
-        Gt,
-        Lt,
-        OPCODE,
-        PC_w,
-        MEM_w,
-        IR_w,
-        RB_w,
-        AB_w,
-        ULA_c,
-        M_Wreg,
-        M_ULAA,
-        M_ULAB,
-        reset
     );
 
 
