@@ -1,10 +1,10 @@
 module MuxMemoria (
-  input  wire [3:0]  seletorMuxMemoria,
+  input  wire [3:0]  MuxAddr,
   input  wire [31:0] valorPC,
   input  wire [31:0] valorResultadoUla,
   input  wire [31:0] valorResultadoAluOut,
 
-  output reg [31:0] saidaMuxMemoria
+  output wire [31:0] saidaMuxMemoria
 );
   parameter valor253 = 32'b00000000000000000000000011111101; // 253 em decimal
   parameter valor254 = 32'b00000000000000000000000011111110; // 254 em decimal
@@ -15,8 +15,8 @@ module MuxMemoria (
 
   always @(*) begin
     auxiliar1 = ((seletorMuxMemoria[1])
-      ? ((seletorMuxMemoria[0]) ? valor253 : valorResultadoAluOut)
-      : ((seletorMuxMemoria[0]) ? valorResultadoUla : valorPC)
+      ? ((seletorMuxMemoria[0]) ? valor253 : valorResultadoUla)
+      : ((seletorMuxMemoria[0]) ? valorResultadoAluOut : valorPC)
     );
     auxiliar2 = (seletorMuxMemoria[0]) ? valor255 : valor254;
     saidaMuxMemoria = (seletorMuxMemoria[2]) ? auxiliar2 : auxiliar1;
@@ -24,8 +24,8 @@ module MuxMemoria (
 endmodule
 
 // 0000 => auxiliar1 => valorPC
-// 0001 => auxiliar1 => valorResultadoUla
-// 0010 => auxiliar1 => valorResultadoAluOut
+// 0001 => auxiliar1 => valorResultadoAluOut
+// 0010 => auxiliar1 => valorResultadoUla
 // 0011 => auxiliar1 => 253
 // 0100 => auxiliar2 => 254
 // 0101 => auxiliar2 => 255
