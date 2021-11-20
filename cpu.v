@@ -32,6 +32,7 @@ module cpu(
     wire[1:0] M_ULAB;
     wire[2:0] M_PC_src;
     wire[3:0] M_WD;
+    wire[2:0] Mux_addr;
 
     // Parts of the instructions
 
@@ -191,8 +192,7 @@ module cpu(
     MuxRegA M_ULAA_(
         M_ULAA,
         PC_out,
-        ULAA_out
-        ,
+        ULAA_out,
         ULAB_out
     );
 
@@ -202,16 +202,14 @@ module cpu(
         ULAB_out,
         SXTND_out,
         SL2_out,
-        ULAULAB_out
+        ULAB_out
     );
 
     ula32 ULA_(
-        ULAULAA_out
-        ,
-        ULAULAB_out,
+        ULAA_out,
+        ULAB_out,
         ULA_c,
-        ULULAA_out
-        ,
+        ULULAA_out,
         Of,
         Ng,
         Zero,

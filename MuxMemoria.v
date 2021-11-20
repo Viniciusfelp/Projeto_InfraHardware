@@ -4,7 +4,7 @@ module MuxMemoria (
   input  wire [31:0] valorResultadoUla,
   input  wire [31:0] valorResultadoAluOut,
 
-  output wire [31:0] saidaMuxMemoria
+  output reg [31:0] saidaMuxMemoria
 );
   parameter valor253 = 32'b00000000000000000000000011111101; // 253 em decimal
   parameter valor254 = 32'b00000000000000000000000011111110; // 254 em decimal

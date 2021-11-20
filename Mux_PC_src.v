@@ -16,5 +16,4 @@ module Mux_PC_src (
                    (PC_src == 3'b100) ? EPC_out: 
                    32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx; 
 
-    
 endmodule
