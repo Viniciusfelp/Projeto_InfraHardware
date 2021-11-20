@@ -55,16 +55,26 @@ module cpu(
     wire[31:0] SL2_out;
     wire[31:0] ALUOut_out;
     wire[31:0] EPC_out;
+    wire[31:0] MEM_addr;
 
     Registrador PC_(
         clk,
         reset,
         PC_w,
-        ULA_out
+        ULA_out,
+        PC_Out
+    );
+
+    MuxMemoria Mux_MEM_(
+        Mux_addr,
+        PC_out,
+        ULA_out,
+        ALUOut_out,
+        MEM_addr
     );
 
     Memoria MEM_(
-        PC_out,
+        MEM_addr,
         clk,
         MEM_w,
         MEM_to_IR,
@@ -173,6 +183,27 @@ module cpu(
 
     //MUXPCsrc
 
-    
+    ctrl_unit CTRL_(
+        clk,
+        reset,
+        Of,
+        Ng,
+        Zero,
+        Eq,
+        Gt,
+        Lt,
+        OPCODE,
+        PC_w,
+        MEM_w,
+        IR_w,
+        RB_w,
+        AB_w,
+        ULA_c,
+        M_Wreg,
+        M_ULAA,
+        M_ULAB,
+        reset
+    );
+
 
 endmodule
