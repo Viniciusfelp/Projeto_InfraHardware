@@ -20,6 +20,7 @@ module cpu(
     wire AB_w;
     wire ALUOut_w;
     wire EPC_w;
+    wire MemDR_w;
 
     // Controllers with more than 1 bit
 
@@ -30,6 +31,7 @@ module cpu(
     wire[1:0] M_ULAA;
     wire[1:0] M_ULAB;
     wire[2:0] M_PC_src;
+    wire[3:0] M_WD;
 
     // Parts of the instructions
 
@@ -47,19 +49,27 @@ module cpu(
     wire[31:0] ULA_out;
     wire[31:0] PC_out;
     wire[31:0] MEM_in;
-    wire[31:0] MEM_to_IR;
-    wire[31:0] RB_to_A;
-    wire[31:0] RB_to_B;
+    wire[31:0] MEM_to_IR; 
+    wire[31:0] RB_to_A; // Banco de registradores para o registrador A
+    wire[31:0] RB_to_B; // Banco de registradores para o registrador B
     wire[31:0] A_out;
     wire[31:0] B_out;
-    wire[31:0] SXTND_out;
-    wire[31:0] SL2_out;
+    wire[31:0] SXTND_out; // Sign extend 16 to 32
+    wire[31:0] SL2_out; // Saida do shift left 2 
     wire[31:0] ALUOut_out;
-    wire[31:0] EPC_out;
-    wire[31:0] MEM_addr;
-    wire[31:0] PC_in;
+    wire[31:0] EPC_out; 
+    wire[31:0] MEM_addr; //Endereço de memoria a ser carregado
+    wire[31:0] PC_in; // Entrado do PC
     wire[31:0] tratamento; // Aquele negocio vermelho nao pensei em nome bom depois mudar
     wire[31:0] jump; // mesma coisa do comentário de cima, mas esse é do jump
+    wire[31:0] MemDR_out; // valor de saida do Memory data register 
+    wire[31:0] HI_out; // TODO
+    wire[31:0] LO_out; // TODO
+    wire[31:0] RegDesl_out; // TODO Saida do registrador de deslocamento
+    wire[31:0] ShiftL16_out; // TODO implementar shiftLeft16
+    wire[31:0] Lt_out;
+    wire[31:0] WD_out; // Saida do multiplexador do write data
+
 
     Registrador PC_(
         clk,
@@ -69,6 +79,7 @@ module cpu(
         PC_out
     );
 
+    //Multiplexador que define o endereço da memória a ser buscado
     MuxMemoria Mux_MEM_(
         Mux_addr,
         PC_out,
@@ -87,6 +98,14 @@ module cpu(
 
     //signExtende 8 -> 32
 
+    Registrador MemoryDataRegister_(
+        clk,
+        reset,
+        MemDR_w,
+        MEM_to_IR,
+        MemDR_out
+    );
+
     Instr_Reg IR_(
         clk,
         reset,
@@ -100,6 +119,7 @@ module cpu(
 
     // SHIFLEFT2 26 bits -> 28 bits
 
+    // Multiplexador write register
     MuxEscritaEnderecoReg M_WREG_(
         M_WREG,
         RT,
@@ -108,7 +128,21 @@ module cpu(
     );
 
 
-    //MUXWRITEDATA
+    //MUXWRITEDATA define o valor de saida do multiplexador do write data
+    MuxWriteData M_WD_(
+        M_WD,
+        MemDR_out, // MemDR_out[7:0] fazer esse tratamento depois
+        MemDR_out, // MemDR_out[15:0] fazer esse tratamento depois
+        ALUOut_out,
+        MemDR_out,
+        HI_out,
+        ULA_out,
+        LO_out,
+        RegDesl_out, //Saida do registrador de deslocamento
+        ShiftL16_out, // implementar shiftLeft16
+        Lt_out, // Transformar Lt de 1 bit para 32
+        WD_out
+    );
 
     Banco_reg REG_BASE_(
         clk,
@@ -142,11 +176,13 @@ module cpu(
         SXTND_out
     );
 
+    // ShiftLeft2 -> multiplicar por 2
     ShiftLeft2 SL2_(
         SXTND_out,
         SL2_out
     );
 
+    // Multiplexador que define o valor de A
     MuxRegA M_ULAA_(
         M_ULAA,
         PC_out,
@@ -154,6 +190,7 @@ module cpu(
         B_out
     );
 
+    //Multiplexador que define o valor de B
     MUXUlaB M_ULAB_(
         M_ULAB,
         B_out,
@@ -191,6 +228,7 @@ module cpu(
         EPC_out
     );
 
+    // Multiplexador que define o valor do PC
     Mux_PC_src M_PC_src_(
         M_PC_src,
         ULA_out,
