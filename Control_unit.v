@@ -23,6 +23,7 @@ module Control_unit (
         // 2 bits
             output reg [1:0] ALUSrcA,
             output reg [1:0] ALUSrcB,
+            output reg ALUOut_w,
             output reg [1:0] RegWriteMUX,
 
         // 3 bits
@@ -48,12 +49,17 @@ reg [4:0] COUNTER;
 
 parameter resetado = 6'd0;
 parameter fetch = 6'd1;
-parameter decode = 6'd2;
+parameter intermFetchDecode = 6'd2;
+parameter decode = 6'd3;
 
 
 //opcodes
-parameter ADD = 6'd0;
+parameter R_TYPE = 6'd0;
 parameter RESET = 6'b111111 ;
+
+//functs
+parameter ADD = 5'd32;
+
 initial begin
     //227 no reg 29
     rst_out = 1'b1;
@@ -69,6 +75,7 @@ always @(posedge clk) begin
             IRWrite = 1'd1;
             ALUSrcA = 2'd0;
             ALUSrcB = 2'd0;
+            ALUOut_w = 1'd0;
             RegWriteMUX = 2'b01;
             MuxAddr = 3'd0;
             ALUControl = 3'd0;
@@ -85,6 +92,7 @@ always @(posedge clk) begin
             IRWrite = 1'd1;
             ALUSrcA = 2'd0;
             ALUSrcB = 2'd0;
+            ALUOut_w = 1'd0;
             RegWriteMUX = 2'b01;
             MuxAddr = 3'd0;
             ALUControl = 3'd0;
@@ -98,21 +106,95 @@ always @(posedge clk) begin
         case (estados)
             fetch: begin
                 if (COUNTER == 5'd0 || COUNTER == 5'd1 || COUNTER == 5'd2) begin
+                    // calcula PC+4 (mas não grava ainda) e lê memória
                     estados = fetch;
                     PCWrite = 1'd0;
                     MemWrite = 1'd0; 
                     MemRead = 1'd1;  ///
-                    IRWrite = 1'd1;
+                    IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
                     ALUSrcB = 2'b01;  ///
+                    ALUOut_w = 1'd0;
                     RegWriteMUX = 2'b01;
                     MuxAddr = 3'd0;   ///
                     ALUControl = 3'b001;  ///
-                    PCSrc = 3'd0;  ///
-                    WriteDataCtrl = 4'b1010;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;  ///
+                    rst_out = 1'd0;
+                    if (COUNTER == 5'd2) begin
+                        estados = intermFetchDecode;
+                        COUNTER = COUNTER + 1;
+                    end
+                    else begin
+                        COUNTER = COUNTER + 1;   
+                    end
+                end
+            end
+
+            intermFetchDecode: begin
+                // grava PC+4 no PC e escreve no IR
+                estados = decode;
+                PCWrite = 1'd1;  ///
+                MemWrite = 1'd0; 
+                MemRead = 1'd0;  ///
+                IRWrite = 1'd1;  ///
+                ALUSrcA = 2'd0;  ///
+                ALUSrcB = 2'd0;  ///
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'b01;
+                MuxAddr = 3'd0;
+                ALUControl = 3'b000;  ///
+                PCSrc = 3'd0;  ///
+                WriteDataCtrl = 4'd0;
+                COUNTER = COUNTER + 1;
+                rst_out = 1'd0;
+            end
+
+            decode: begin
+                if (COUNTER == 5'd4) begin
+                    // calcula o endereço de branch e lê no banco de registradores
+                    estados = decode;
+                    PCWrite = 1'd0;  ///
+                    MemWrite = 1'd0; 
+                    MemRead = 1'd0;  ///
+                    IRWrite = 1'd0;  ///
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'b01;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b001;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
                     rst_out = 1'd0;
-                end
+                end   
+                else if (COUNTER == 5'd5) begin
+                    // escreve no ALUOut e nos A e B
+                    case (OPCODE) begin
+                        R_TYPE: begin
+                            case (funct) begin
+                                ADD: begin
+                                    estados = ADD;
+                                end
+                            end
+                        end
+                    end
+                    PCWrite = 1'd0;
+                    MemWrite = 1'd0; 
+                    MemRead = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;  ///
+                    ALUOut_w = 1'd1;  ///
+                    RegWriteMUX = 2'b01;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    rst_out = 1'd0;
+                end      
             end
         
         endcase
