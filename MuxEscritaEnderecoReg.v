@@ -5,8 +5,8 @@ module MuxEscritaEnderecoReg (
 
   output reg [4:0] saidaValorEnderecoReg
 );
-  parameter valor29 = 32'b00000000000000000000000000011101; // 29 em decimal
-  parameter valor31 = 32'b00000000000000000000000000011111; // 31 em decimal
+  parameter valor29 = 5'b11101; // 29 em decimal
+  parameter valor31 = 5'b11111; // 31 em decimal
 
   always @(*) begin
     saidaValorEnderecoReg = ((RegWriteMUX[1])

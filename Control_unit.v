@@ -11,13 +11,12 @@ module Control_unit (
     // opcode e funct
     
     input wire [5:0] OPCODE,
-    input wire [5:0] FUNCT,
+    input wire [5:0] funct,
 
     // Sinais de controle de
         // 1 bit
             output reg PCWrite,
-            output reg MemWrite,
-            output reg MemRead,
+            output reg MemWR,
             output reg IRWrite,
 
         // 2 bits
@@ -67,11 +66,10 @@ end
 always @(posedge clk) begin
     if (reset == 1'b1) begin
         if (estados != resetado) begin
-		  
-            estados = fetch;
+            estados = resetado;
             PCWrite = 1'd0;
-            MemWrite = 1'd0;
-            MemRead = 1'd0;
+            MemWR = 1'd0;
+            MemWR = 1'd0;
             IRWrite = 1'd1;
             ALUSrcA = 2'd0;
             ALUSrcB = 2'd0;
@@ -87,8 +85,8 @@ always @(posedge clk) begin
         else begin
             estados = resetado;
             PCWrite = 1'd0;
-            MemWrite = 1'd0;
-            MemRead = 1'd0;
+            MemWR = 1'd0;
+            MemWR = 1'd0;
             IRWrite = 1'd1;
             ALUSrcA = 2'd0;
             ALUSrcB = 2'd0;
@@ -109,8 +107,8 @@ always @(posedge clk) begin
                     // calcula PC+4 (mas não grava ainda) e lê memória
                     estados = fetch;
                     PCWrite = 1'd0;
-                    MemWrite = 1'd0; 
-                    MemRead = 1'd1;  ///
+                    MemWR = 1'd0; 
+                    MemWR = 1'd1;  ///
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
                     ALUSrcB = 2'b01;  ///
@@ -135,8 +133,8 @@ always @(posedge clk) begin
                 // grava PC+4 no PC e escreve no IR
                 estados = decode;
                 PCWrite = 1'd1;  ///
-                MemWrite = 1'd0; 
-                MemRead = 1'd0;  ///
+                MemWR = 1'd0; 
+                MemWR = 1'd0;  ///
                 IRWrite = 1'd1;  ///
                 ALUSrcA = 2'd0;  ///
                 ALUSrcB = 2'd0;  ///
@@ -155,8 +153,8 @@ always @(posedge clk) begin
                     // calcula o endereço de branch e lê no banco de registradores
                     estados = decode;
                     PCWrite = 1'd0;  ///
-                    MemWrite = 1'd0; 
-                    MemRead = 1'd0;  ///
+                    MemWR = 1'd0; 
+                    MemWR = 1'd0;  ///
                     IRWrite = 1'd0;  ///
                     ALUSrcA = 2'd0;  ///
                     ALUSrcB = 2'd1;  ///
@@ -171,7 +169,7 @@ always @(posedge clk) begin
                 end   
                 else if (COUNTER == 5'd5) begin
                     // escreve no ALUOut e nos A e B
-                    case (OPCODE) 
+                    case (OPCODE) // adicionar default para tratamento de exceção
                         R_TYPE: begin
                             case (funct) 
                                 ADD: begin
@@ -180,9 +178,10 @@ always @(posedge clk) begin
                             endcase
                         end
                     endcase
+
                     PCWrite = 1'd0;
-                    MemWrite = 1'd0; 
-                    MemRead = 1'd0;
+                    MemWR = 1'd0; 
+                    MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
                     ALUSrcB = 2'd0;  ///
