@@ -1,5 +1,5 @@
 module MuxMemoria (
-  input  wire [3:0]  MuxAddr,
+  input  wire [2:0]  MuxAddr,
   input  wire [31:0] valorPC,
   input  wire [31:0] valorResultadoUla,
   input  wire [31:0] valorResultadoAluOut,
@@ -14,18 +14,18 @@ module MuxMemoria (
   reg [31:0] auxiliar2;
 
   always @(*) begin
-    auxiliar1 = ((seletorMuxMemoria[1])
-      ? ((seletorMuxMemoria[0]) ? valor253 : valorResultadoUla)
-      : ((seletorMuxMemoria[0]) ? valorResultadoAluOut : valorPC)
+    auxiliar1 = ((MuxAddr[1])
+      ? ((MuxAddr[0]) ? valor253 : valorResultadoUla)
+      : ((MuxAddr[0]) ? valorResultadoAluOut : valorPC)
     );
-    auxiliar2 = (seletorMuxMemoria[0]) ? valor255 : valor254;
-    saidaMuxMemoria = (seletorMuxMemoria[2]) ? auxiliar2 : auxiliar1;
+    auxiliar2 = (MuxAddr[0]) ? valor255 : valor254;
+    saidaMuxMemoria = (MuxAddr[2]) ? auxiliar2 : auxiliar1;
   end
 endmodule
 
-// 0000 => auxiliar1 => valorPC
-// 0001 => auxiliar1 => valorResultadoAluOut
-// 0010 => auxiliar1 => valorResultadoUla
-// 0011 => auxiliar1 => 253
-// 0100 => auxiliar2 => 254
-// 0101 => auxiliar2 => 255
+// 000 => auxiliar1 => valorPC
+// 001 => auxiliar1 => valorResultadoAluOut
+// 010 => auxiliar1 => valorResultadoUla
+// 011 => auxiliar1 => 253
+// 100 => auxiliar2 => 254
+// 101 => auxiliar2 => 255
