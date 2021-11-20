@@ -29,6 +29,7 @@ module cpu(
     wire M_WREG;
     wire[1:0] M_ULAA;
     wire[1:0] M_ULAB;
+    wire[2:0] M_PC_src;
 
     // Parts of the instructions
 
@@ -56,12 +57,15 @@ module cpu(
     wire[31:0] ALUOut_out;
     wire[31:0] EPC_out;
     wire[31:0] MEM_addr;
+    wire[31:0] PC_in;
+    wire[31:0] tratamento; // Aquele negocio vermelho nao pensei em nome bom depois mudar
+    wire[31:0] jump; // mesma coisa do comentário de cima, mas esse é do jump
 
     Registrador PC_(
         clk,
         reset,
         PC_w,
-        ULA_out,
+        PC_in,
         PC_Out
     );
 
@@ -80,6 +84,8 @@ module cpu(
         MEM_to_IR,
         MEM_in 
     );
+
+    //signExtende 8 -> 32
 
     Instr_Reg IR_(
         clk,
@@ -103,7 +109,6 @@ module cpu(
 
 
     //MUXWRITEDATA
-
 
     Banco_reg REG_BASE_(
         clk,
@@ -181,7 +186,15 @@ module cpu(
         EPC_out
     );
 
-    //MUXPCsrc
+    Mux_PC_src M_PC_src_(
+        M_PC_src,
+        ULA_out,
+        ALUOut_out,
+        jump,
+        tratamento,
+        EPC_out,
+        PC_in
+    );
 
     ctrl_unit CTRL_(
         clk,
