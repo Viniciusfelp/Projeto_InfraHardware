@@ -59,6 +59,8 @@ module cpu(
     wire[31:0] SL2_out; // Saida do shift left 2 
     wire[31:0] ALUOut_out;
     wire[31:0] EPC_out; 
+    wire[31:0] RegA_out;
+    wire[31:0] RegB_out;
     wire[31:0] MEM_addr; //Endereço de memoria a ser carregado
     wire[31:0] PC_in; // Entrado do PC
     wire[31:0] tratamento; // Aquele negocio vermelho nao pensei em nome bom depois mudar
