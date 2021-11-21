@@ -258,6 +258,7 @@ module cpu(
             PC_w,
             MEM_wr,
             IR_w,
+            RB_w,
             M_ULAA,
             M_ULAB,
             ALUOut_w,

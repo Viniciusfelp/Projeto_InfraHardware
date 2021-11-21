@@ -18,6 +18,7 @@ module Control_unit (
             output reg PCWrite,
             output reg MemWR,
             output reg IRWrite,
+            output reg RegWrite,
 
         // 2 bits
             output reg [1:0] ALUSrcA,
@@ -50,6 +51,7 @@ parameter resetado = 6'd0;
 parameter fetch = 6'd1;
 parameter intermFetchDecode = 6'd2;
 parameter decode = 6'd3;
+parameter estadoADD = 6'd4;
 
 
 //opcodes
@@ -69,10 +71,10 @@ always @(posedge clk) begin
             estados = resetado;
             PCWrite = 1'd0;
             MemWR = 1'd0;
-            MemWR = 1'd0;
             IRWrite = 1'd1;
             ALUSrcA = 2'd0;
             ALUSrcB = 2'd0;
+            RegWrite = 1'd0;
             ALUOut_w = 1'd0;
             RegWriteMUX = 2'b01;
             MuxAddr = 3'd0;
@@ -86,10 +88,10 @@ always @(posedge clk) begin
             estados = resetado;
             PCWrite = 1'd0;
             MemWR = 1'd0;
-            MemWR = 1'd0;
             IRWrite = 1'd1;
             ALUSrcA = 2'd0;
             ALUSrcB = 2'd0;
+            RegWrite = 1'd0;
             ALUOut_w = 1'd0;
             RegWriteMUX = 2'b01;
             MuxAddr = 3'd0;
@@ -107,11 +109,11 @@ always @(posedge clk) begin
                     // calcula PC+4 (mas não grava ainda) e lê memória
                     estados = fetch;
                     PCWrite = 1'd0;
-                    MemWR = 1'd0; 
                     MemWR = 1'd1;  ///
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
                     ALUSrcB = 2'b01;  ///
+                    RegWrite = 1'd0;
                     ALUOut_w = 1'd0;
                     RegWriteMUX = 2'b01;
                     MuxAddr = 3'd0;   ///
@@ -133,11 +135,11 @@ always @(posedge clk) begin
                 // grava PC+4 no PC e escreve no IR
                 estados = decode;
                 PCWrite = 1'd1;  ///
-                MemWR = 1'd0; 
                 MemWR = 1'd0;  ///
                 IRWrite = 1'd1;  ///
                 ALUSrcA = 2'd0;  ///
                 ALUSrcB = 2'd0;  ///
+                RegWrite = 1'd0;
                 ALUOut_w = 1'd0;
                 RegWriteMUX = 2'b01;
                 MuxAddr = 3'd0;
@@ -153,11 +155,11 @@ always @(posedge clk) begin
                     // calcula o endereço de branch e lê no banco de registradores
                     estados = decode;
                     PCWrite = 1'd0;  ///
-                    MemWR = 1'd0; 
                     MemWR = 1'd0;  ///
                     IRWrite = 1'd0;  ///
                     ALUSrcA = 2'd0;  ///
                     ALUSrcB = 2'd1;  ///
+                    RegWrite = 1'd0;
                     ALUOut_w = 1'd0;
                     RegWriteMUX = 2'b01;
                     MuxAddr = 3'd0;
@@ -169,22 +171,13 @@ always @(posedge clk) begin
                 end   
                 else if (COUNTER == 5'd5) begin
                     // escreve no ALUOut e nos A e B
-                    case (OPCODE) // adicionar default para tratamento de exceção
-                        R_TYPE: begin
-                            case (funct) 
-                                ADD: begin
-                                    estados = ADD;
-                                end
-                            endcase
-                        end
-                    endcase
-
+                    estados = decode;
                     PCWrite = 1'd0;
                     MemWR = 1'd0; 
-                    MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
                     ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd0;
                     ALUOut_w = 1'd1;  ///
                     RegWriteMUX = 2'b01;
                     MuxAddr = 3'd0;
@@ -194,8 +187,70 @@ always @(posedge clk) begin
                     COUNTER = COUNTER + 1;
                     rst_out = 1'd0;
                 end      
+                else if (COUNTER == 5'd6) begin
+                    // troca de estados e reseta o resto
+                    case (OPCODE) // adicionar default para tratamento de exceção
+                        R_TYPE: begin
+                            case (funct) 
+                                ADD: begin
+                                    estados = ADD;
+                                end
+                            endcase
+                        end
+                    endcase
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0; 
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'd0;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = 5'd0;
+                    rst_out = 1'd0;
+                end
             end
-        
+
+            estadoADD: begin
+                if (COUNTER == 5'd0) begin
+                    estados = estadoADD;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd2;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b001;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    estados = fetch;
+                    PCWrite = 1'd0; 
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd3;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd5;  ///
+                    COUNTER = 5'd0;
+                    rst_out = 1'd0;
+                end
+            end
         endcase
     end
 end
