@@ -39,7 +39,11 @@ module cpu(
     wire[5:0] OPCODE;
     wire[4:0] RS;
     wire[4:0] RT;
-    wire[15:0] OFFSET;
+    wire[15:0] addr_or_immed;
+    wire[4:0] RD = addr_or_immed[15:11];
+    wire[4:0] shamt = addr_or_immed[10:6];
+    wire[5:0] funct = addr_or_immed[5:0];
+    wire[25:0] offset = {RS, RT, addr_or_immed};
 
     // Data wires with less than 32 bits
 
@@ -49,6 +53,7 @@ module cpu(
 
     wire[31:0] ALU_out;
     wire[31:0] PC_out;
+
     wire[31:0] MEM_in;
     wire[31:0] MEM_to_IR; 
     wire[31:0] RB_to_A; // Banco de registradores para o registrador A
@@ -58,17 +63,29 @@ module cpu(
     wire[31:0] SXTND_out; // Sign extend 16 to 32
     wire[31:0] SL2_out; // Saida do shift left 2 
     wire[31:0] ALUOut_out;
+
     wire[31:0] EPC_out; 
     wire[31:0] RegA_out;
     wire[31:0] RegB_out;
+
     wire[31:0] MEM_addr; //Endereço de memoria a ser carregado
     wire[31:0] PC_in; // Entrado do PC
     wire[31:0] tratamento; // Aquele negocio vermelho nao pensei em nome bom depois mudar
-    wire[31:0] jump; // mesma coisa do comentário de cima, mas esse é do jump
+
+    wire[27:0] SL26to28_out;//Shiftleft2 que altera de 26 bits para 28
+
+    ShiftLeft2_26to28 SL(offset, SL26to28_out);
+    
+    wire[31:0] jump = {PC_out, SL26to28_out}; //endereco de jump
+
+
     wire[31:0] MemDR_out; // valor de saida do Memory data register 
+
     wire[31:0] HI_out; // TODO
     wire[31:0] LO_out; // TODO
+
     wire[31:0] RegDesl_out; // TODO Saida do registrador de deslocamento
+
     wire[31:0] ShiftL16_out; // TODO implementar shiftLeft16
     wire[31:0] Lt_out;
     wire[31:0] WD_out; // Saida do multiplexador do write data
@@ -94,13 +111,12 @@ module cpu(
     Memoria MEM_(
         MEM_addr,
         clk,
-        MEM_wr
-,
+        MEM_wr,
         MEM_to_IR,
         MEM_in 
     );
 
-    //signExtende 8 -> 32
+    // TODO signExtende 8 -> 32
 
     Registrador MemoryDataRegister_(
         clk,
@@ -118,25 +134,36 @@ module cpu(
         OPCODE,
         RS,
         RT,
-        OFFSET
+        addr_or_immed
     );
-
-    // SHIFLEFT2 26 bits -> 28 bits
 
     // Multiplexador write register
     MuxEscritaEnderecoReg M_WREG_(
         M_WREG,
         RT,
-        OFFSET,
+        addr_or_immed,
         WRITEREG_in
     );
 
+    ///faltam os mux
+    RegDesloc RegDesl_(
+        clk,
+        reset,
+        shiftCrtl,
+        ,// TODO muxN saida
+        , // TODO muxEntrada saida
+        RegDesl_out
+    );
+
+
+    wire[31:0] MemDR_outLB = {24'd0, MemDR_out[7:0]}; // Valor a ser carregado em um load byte
+    wire[31:0] MemDR_outLH = {16'd0, MemDR_out[15:0]}; // Valor a ser carregado em um load half
 
     //MUXWRITEDATA define o valor de saida do multiplexador do write data
     MuxWriteData M_WD_(
         M_WD,
-        MemDR_out, // MemDR_out[7:0] fazer esse tratamento depois
-        MemDR_out, // MemDR_out[15:0] fazer esse tratamento depois
+        MemDR_outLB, 
+        MemDR_outLH, 
         ALUOut_out,
         MemDR_out,
         HI_out,
@@ -178,7 +205,7 @@ module cpu(
     );
 
     SignExtend16to32 SXTND_(
-        OFFSET,
+        addr_or_immed,
         SXTND_out
     );
 
@@ -247,7 +274,6 @@ module cpu(
         PC_in
     );
 
-    wire [5:0] FUNCT;
 
     Control_unit UnidadeDeControle(
             clk,
@@ -256,7 +282,7 @@ module cpu(
             Lt,
             Gt,
             OPCODE,
-            FUNCT,
+            funct,
             PC_w,
             MEM_wr,
             IR_w,
