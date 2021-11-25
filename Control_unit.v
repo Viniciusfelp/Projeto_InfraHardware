@@ -56,10 +56,43 @@ parameter estadoADD = 6'd4;
 
 //opcodes
 parameter R_TYPE = 6'd0;
-parameter RESET = 6'b111111 ;
+parameter RESET = 6'b111111;
+parameter ADDI = 6'd8;
+parameter ADDIU = 6'd9;
+parameter BEQ = 6'd4;
+parameter BNE = 6'd5;
+parameter BLE = 6'd6;
+parameter BGT = 6'd7;
+parameter SRAM = 6'd1;
+parameter LB = 6'd32;
+parameter LH = 6'd33;
+parameter LUI = 6'd15;
+parameter LW = 6'd35;
+parameter SB = 6'd40;
+parameter SH = 6'd41;
+parameter SLTI = 6'd10;
+parameter SW = 6'd43;
+parameter J = 6'd2;
+parameter JAL = 6'd3;
 
 //functs
 parameter ADD = 6'd32;
+parameter AND = 6'd36;
+parameter DIV = 6'd26;
+parameter MULT = 6'd24;
+parameter JR = 6'd8;
+parameter MFHI = 6'd16;
+parameter MFLO = 6'd18;
+parameter SLL = 6'd0;
+parameter SLLV = 6'd4;
+parameter SLT = 6'd42;
+parameter SRA = 6'd3;
+parameter SRAV = 6'd7;
+parameter SRL = 6'd2;
+parameter SUB = 6'd34;
+parameter BREAK = 6'd13;
+parameter RTE = 6'd19;
+parameter DIVM = 6'd5;
 
 initial begin
     //227 no reg 29
