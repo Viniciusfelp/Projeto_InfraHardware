@@ -28,6 +28,8 @@ module cpu(
 
     // Controllers for muxes
     wire [1:0] M_WREG;
+    wire [1:0] ShifN;
+    wire [1:0] ShifInput;
     wire[1:0] M_ULAA;
     wire[1:0] M_ULAB;
     wire[2:0] M_PC_src;
@@ -46,7 +48,8 @@ module cpu(
     wire[25:0] offset = {RS, RT, addr_or_immed};
 
     // Data wires with less than 32 bits
-
+    wire [31:0] RegDeslInput;
+    wire [31:0] RegDeslN; // TODO aqui é 32 bits ou 16?
     wire[4:0] WRITEREG_in;
 
     // Data wires with 32 bits
@@ -145,13 +148,27 @@ module cpu(
         WRITEREG_in
     );
 
-    ///faltam os mux
+    MuxInputRegDesl MuxInputRegDesl_(
+        ShifInput,
+        RegB_out,
+        RegA_out,
+        RegDeslInput
+    );
+
+    MuxNRegDesl MuxNRegDesl_(
+        ShifN,
+        addr_or_immed,
+        MemDR_out,
+        RegB_out,
+        RegDeslN
+    );
+
     RegDesloc RegDesl_(
         clk,
         reset,
         shiftCrtl,
-        ,// TODO muxN saida
-        , // TODO muxEntrada saida
+        RegDeslN,
+        RegDeslInput,
         RegDesl_out
     );
 
@@ -295,6 +312,8 @@ module cpu(
             ULA_c,
             M_PC_src,
             M_WD,
+            ShifN,
+            ShifInput,
             reset_out
     );
     

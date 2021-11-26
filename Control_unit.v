@@ -14,13 +14,13 @@ module Control_unit (
     input wire [5:0] funct,
 
     // Sinais de controle de
-        // 1 bit
+
             output reg PCWrite,
             output reg MemWR,
             output reg IRWrite,
             output reg RegWrite,
 
-        // 2 bits
+
             output reg [1:0] ALUSrcA,
             output reg [1:0] ALUSrcB,
             output reg ALUOut_w,
@@ -31,8 +31,9 @@ module Control_unit (
             output reg [2:0] ALUControl,
             output reg [2:0] PCSrc,
 
-        // 4 bits 
             output reg [3:0] WriteDataCtrl,
+            output reg [1:0] ShifN,
+            output reg [1:0] ShifInput,
     
     // reset especial
 
@@ -120,6 +121,8 @@ always @(posedge clk) begin
             PCSrc = 3'd0;
             WriteDataCtrl = 4'b1010;
             COUNTER = 3'd0;
+            ShifN = 1'd0;
+            ShifInput = 1'd;
             rst_out = 1'd1;
         end
         else begin
@@ -137,6 +140,8 @@ always @(posedge clk) begin
             PCSrc = 3'd0;
             WriteDataCtrl = 4'b1010;
             COUNTER = 3'd0;
+            ShifN = 1'd0;
+            ShifInput = 1'd;
             rst_out = 1'd1;
         end
     end
@@ -158,6 +163,8 @@ always @(posedge clk) begin
                     ALUControl = 3'b001;  ///
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;  ///
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                     if (COUNTER == 5'd2) begin
                         estados = intermFetchDecode;
@@ -185,6 +192,8 @@ always @(posedge clk) begin
                 PCSrc = 3'd0;  ///
                 WriteDataCtrl = 4'd0;
                 COUNTER = COUNTER + 1;
+                ShifN = 1'd0;
+                ShifInput = 1'd;
                 rst_out = 1'd0;
             end
 
@@ -205,6 +214,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end   
                 else if (COUNTER == 5'd5) begin
@@ -223,6 +234,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end      
                 else if (COUNTER == 5'd6) begin
@@ -267,6 +280,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = 5'd0;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end
             end
@@ -288,6 +303,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -306,6 +323,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd5;  ///
                     COUNTER = 5'd0;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end
             end
@@ -327,6 +346,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -345,6 +366,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd5;  ///
                     COUNTER = 5'd0;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end
 
@@ -365,6 +388,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -383,6 +408,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd5;  ///
                     COUNTER = 5'd0;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end
             end
@@ -404,6 +431,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -422,6 +451,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'b1001;  ///
                     COUNTER = 5'd0;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
             end
             
@@ -441,6 +472,8 @@ always @(posedge clk) begin
                 PCSrc = 3'b101;
                 WriteDataCtrl = 4'd0;
                 COUNTER = 5'd0;
+                ShifN = 1'd0;
+                ShifInput = 1'd;
                 rst_out = 1'd0;
             end
 
@@ -461,6 +494,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -479,6 +514,8 @@ always @(posedge clk) begin
                     PCSrc = 3'b000;  ///
                     WriteDataCtrl = 4'd0;
                     COUNTER = 5'd0;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
             end
             
@@ -499,6 +536,8 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -517,6 +556,8 @@ always @(posedge clk) begin
                     PCSrc = 3'b101;  ///
                     WriteDataCtrl = 4'd0;
                     COUNTER = 5'd0;
+                    ShifN = 1'd0;
+                    ShifInput = 1'd;
                     rst_out = 1'd0;
             end
         endcase
