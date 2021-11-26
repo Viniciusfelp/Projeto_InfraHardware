@@ -52,7 +52,12 @@ parameter fetch = 6'd1;
 parameter intermFetchDecode = 6'd2;
 parameter decode = 6'd3;
 parameter estadoADD = 6'd4;
-
+parameter estadoSUB = 6'd5;
+parameter estadoAND = 6'd6;
+parameter estadoSLT = 6'd7;
+parameter estadoRTE = 6'd8;
+parameter estadoBREAK = 6'd9;
+parameter estadoJR = 6'd10;
 
 //opcodes
 parameter R_TYPE = 6'd0;
@@ -226,7 +231,25 @@ always @(posedge clk) begin
                         R_TYPE: begin
                             case (funct) 
                                 ADD: begin
-                                    estados = ADD;
+                                    estados = estadoADD;
+                                end
+                                SUB: begin
+                                    estados = estadoSUB;
+                                end
+                                AND: begin
+                                    estados = estadoAND;
+                                end
+                                SLT: begin
+                                    estados = estadoSLT;
+                                end
+                                RTE: begin
+                                    estados = estadoRTE;
+                                end
+                                BREAK: begin
+                                    estados = estadoBREAK;
+                                end
+                                JR: begin
+                                    estados = estadoJR;
                                 end
                             endcase
                         end
@@ -250,6 +273,7 @@ always @(posedge clk) begin
 
             estadoADD: begin
                 if (COUNTER == 5'd0) begin
+                    // realiza a soma
                     estados = estadoADD;
                     PCWrite = 1'd0;
                     MemWR = 1'd0;
@@ -267,12 +291,13 @@ always @(posedge clk) begin
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
+                    // guarda no banco de registradores e volta pro estado de fetch
                     estados = fetch;
                     PCWrite = 1'd0; 
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
-                    ALUSrcB = 2'd0;
+                    ALUSrcB = 2'd0;  ///
                     RegWrite = 1'd1;  ///
                     ALUOut_w = 1'd0;
                     RegWriteMUX = 2'd3;  ///
@@ -283,6 +308,216 @@ always @(posedge clk) begin
                     COUNTER = 5'd0;
                     rst_out = 1'd0;
                 end
+            end
+
+            estadoSUB: begin
+                if (COUNTER == 5'd0) begin
+                    // realiza a subtração
+                    estados = estadoSUB;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd2;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b010;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // guarda no banco de registradores e volta pro estado de fetch
+                    estados = fetch;
+                    PCWrite = 1'd0; 
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd3;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd5;  ///
+                    COUNTER = 5'd0;
+                    rst_out = 1'd0;
+                end
+
+                estadoAND: begin
+                    if (COUNTER == 5'd0) begin
+                    // realiza o AND
+                    estados = estadoAND;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd2;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b011;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // guarda no banco de registradores e volta pro estado de fetch
+                    estados = fetch;
+                    PCWrite = 1'd0; 
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd3;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd5;  ///
+                    COUNTER = 5'd0;
+                    rst_out = 1'd0;
+                end
+            end
+
+            estadoSLT: begin
+                if (COUNTER == 5'd0) begin
+                    // realiza a comparação
+                    estados = estadoSLT;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd2;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b111;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // guarda no banco de registradores e volta pro estado de fetch
+                    estados = fetch;
+                    PCWrite = 1'd0; 
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd3;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'b1001;  ///
+                    COUNTER = 5'd0;
+                    rst_out = 1'd0;
+            end
+            
+            estadoRTE: begin
+                //guarda em PC e volta pra fetch em seguida
+                estados = fetch;
+                PCWrite = 1'd1; ///
+                MemWR = 1'd0;
+                IRWrite = 1'd0;
+                ALUSrcA = 2'd0; 
+                ALUSrcB = 2'd0;
+                RegWrite = 1'd0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd0;
+                ALUControl = 3'b000;
+                PCSrc = 3'b101;
+                WriteDataCtrl = 4'd0;
+                COUNTER = 5'd0;
+                rst_out = 1'd0;
+            end
+
+            estadoBREAK: begin
+                if (COUNTER == 5'd0) begin
+                    // realiza PC - 4
+                    estados = estadoBREAK;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  ///
+                    ALUSrcB = 2'b01;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b010;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // guarda em PC e volta pra fetch
+                    estados = fetch;
+                    PCWrite = 1'b1; ///
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'b000;  ///
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = 5'd0;
+                    rst_out = 1'd0;
+            end
+            
+            estadoJR: begin
+                if (COUNTER == 5'd0) begin
+                    // dá hold em A
+                    estados = estadoJR;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b10;  ///
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // guarda em PC e volta pra fetch
+                    estados = fetch;
+                    PCWrite = 1'b1; ///
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'b101;  ///
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = 5'd0;
+                    rst_out = 1'd0;
             end
         endcase
     end
