@@ -45,6 +45,7 @@ module Control_unit (
             output reg MemDR_w,
             output reg storeOp,
             output reg [1:0] BranchCtrl,
+            output reg AB_w,
     
     // reset especial
 
@@ -85,9 +86,9 @@ parameter estadoLW = 6'd22;
 parameter estadoSB = 6'd23;
 parameter estadoSH = 6'd24;
 parameter estadoSW = 6'd25;
-parameter estadoBNQ = 6'd23;
-parameter estadoBGT = 6'd24;
-parameter estadoBLE = 6'd25;
+parameter estadoBNE = 6'd26;
+parameter estadoBGT = 6'd27;
+parameter estadoBLE = 6'd28;
 
 //opcodes
 parameter R_TYPE = 6'd0;
@@ -140,7 +141,7 @@ always @(posedge clk) begin
             PCWrite = 1'd0;
             PCWriteCond = 1'd0;
             MemWR = 1'd0;
-            IRWrite = 1'd1;
+            IRWrite = 1'd0;
             ALUSrcA = 2'd0;
             ALUSrcB = 2'd0;
             RegWrite = 1'd0;
@@ -163,11 +164,12 @@ always @(posedge clk) begin
             MemDR_w = 1'd0;
             storeOp = 2'd0;
             BranchCtrl = 2'd0;
+            AB_w = 1'b0;
             rst_out = 1'd1;
             
         end
         else begin
-            estados = resetado;
+            estados = fetch;
             PCWrite = 1'd0;
             PCWriteCond = 1'd0;
             MemWR = 1'd0;
@@ -194,24 +196,24 @@ always @(posedge clk) begin
             MemDR_w = 1'd0;
             storeOp = 2'd0;
             BranchCtrl = 2'd0;
-            rst_out = 1'd1;
+            AB_w = 0;
+            rst_out = 1'd0;
         end
     end
     else begin
         case (estados)
             fetch: begin
-                if (COUNTER == 5'd0 || COUNTER == 5'd1 || COUNTER == 5'd2) begin
-                    // calcula PC+4 (mas não grava ainda) e lê memória
+                if (COUNTER == 5'd0) begin
                     estados = fetch;
-                    PCWrite = 1'd0;
+                    PCWrite = 1'd1;
                     PCWriteCond = 1'd0;
-                    MemWR = 1'd1;  ///
+                    MemWR = 1'd0;  
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
                     ALUSrcB = 2'b01;  ///
                     RegWrite = 1'd0;
                     ALUOut_w = 1'd0;
-                    RegWriteMUX = 2'b01;
+                    RegWriteMUX = 2'b00;
                     MuxAddr = 3'd0;   ///
                     ALUControl = 3'b001;  ///
                     PCSrc = 3'd0;
@@ -228,21 +230,48 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
-                    if (COUNTER == 5'd2) begin
-                        estados = intermFetchDecode;
-                        COUNTER = COUNTER + 1;
-                    end
-                    else begin
-                        COUNTER = COUNTER + 1;   
-                    end
+                    COUNTER = COUNTER + 1;
                 end
+                else if (COUNTER == 5'd1) begin
+                    estados = intermFetchDecode;
+                    PCWrite = 1'd0;  ///
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;  ///
+                    IRWrite = 1'd0;  ///
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'b00;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'd0;  ///
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = 0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0; 
+                    LOMuxCtrl = 1'd0; 
+                    HI_w = 1'd0; 
+                    LO_w = 1'd0; 
+                    DIVA = 1'd0; 
+                    DIVB = 1'd0; 
+                    MemDR_w = 1'd0;
+                    storeOp = 2'd0;
+                    BranchCtrl = 2'd0;
+                    AB_w = 0;
+                    rst_out = 1'd0;
+                end
+                
             end
 
             intermFetchDecode: begin
-                // grava PC+4 no PC e escreve no IR
+                //escreve no IR
                 estados = decode;
-                PCWrite = 1'd1;  ///
+                PCWrite = 1'd0;  ///
                 PCWriteCond = 1'd0;
                 MemWR = 1'd0;  ///
                 IRWrite = 1'd1;  ///
@@ -250,12 +279,12 @@ always @(posedge clk) begin
                 ALUSrcB = 2'd0;  ///
                 RegWrite = 1'd0;
                 ALUOut_w = 1'd0;
-                RegWriteMUX = 2'b01;
+                RegWriteMUX = 2'b00;
                 MuxAddr = 3'd0;
                 ALUControl = 3'b000;  ///
                 PCSrc = 3'd0;  ///
                 WriteDataCtrl = 4'd0;
-                COUNTER = COUNTER + 1;
+                COUNTER = 0;
                 ShiftN = 2'd0;
                 ShiftInput = 1'd0;
                 shiftCtrl = 3'd0;
@@ -268,22 +297,24 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 storeOp = 2'd0;
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
 
             decode: begin
-                if (COUNTER == 5'd4) begin
+                if (COUNTER == 5'd0) begin
                     // calcula o endereço de branch e lê no banco de registradores
                     estados = decode;
                     PCWrite = 1'd0;
                     PCWriteCond = 1'd0;  ///
                     MemWR = 1'd0;  ///
+                    AB_w = 1'b1;
                     IRWrite = 1'd0;  ///
                     ALUSrcA = 2'd0;  ///
-                    ALUSrcB = 2'd1;  ///
+                    ALUSrcB = 2'd3;  ///
                     RegWrite = 1'd0;
-                    ALUOut_w = 1'd0;
-                    RegWriteMUX = 2'b01;
+                    ALUOut_w = 1'd1;
+                    RegWriteMUX = 2'b00;
                     MuxAddr = 3'd0;
                     ALUControl = 3'b001;  ///
                     PCSrc = 3'd0;
@@ -303,38 +334,7 @@ always @(posedge clk) begin
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end   
-                else if (COUNTER == 5'd5) begin
-                    // escreve no ALUOut e nos A e B
-                    estados = decode;
-                    PCWrite = 1'd0;
-                    PCWriteCond = 1'd0;
-                    MemWR = 1'd0; 
-                    IRWrite = 1'd0;
-                    ALUSrcA = 2'd0;
-                    ALUSrcB = 2'd0;  ///
-                    RegWrite = 1'd0;
-                    ALUOut_w = 1'd1;  ///
-                    RegWriteMUX = 2'b01;
-                    MuxAddr = 3'd0;
-                    ALUControl = 3'b000;  ///
-                    PCSrc = 3'd0;
-                    WriteDataCtrl = 4'd0;
-                    COUNTER = COUNTER + 1;
-                    ShiftN = 2'd0;
-                    ShiftInput = 1'd0;
-                    shiftCtrl = 3'd0;
-                    HIMuxCtrl = 1'd0; 
-                    LOMuxCtrl = 1'd0; 
-                    HI_w = 1'd0; 
-                    LO_w = 1'd0; 
-                    DIVA = 1'd0; 
-                    DIVB = 1'd0; 
-                    MemDR_w = 1'd0;
-                    storeOp = 2'd0;
-                    BranchCtrl = 2'd0;
-                    rst_out = 1'd0;
-                end      
-                else if (COUNTER == 5'd6) begin
+                else if (COUNTER == 5'd1) begin
                     // troca de estados e reseta o resto
                     case (OPCODE) // adicionar default para tratamento de exceção
                         R_TYPE: begin
@@ -416,7 +416,9 @@ always @(posedge clk) begin
                         SH: begin
                             estados = estadoSH;
                         end
-                        SW
+                        SW: begin
+                            estados = estadoSW;
+                        end
                     endcase
                     PCWrite = 1'd0;
                     PCWriteCond = 1'd0;
@@ -444,6 +446,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -478,6 +481,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -509,6 +513,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -543,6 +548,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -574,6 +580,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -607,6 +614,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -638,6 +646,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -672,6 +681,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -703,6 +713,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -736,6 +747,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 storeOp = 2'd0;
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
 
@@ -769,6 +781,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -800,6 +813,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -834,6 +848,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -865,6 +880,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end 
@@ -899,6 +915,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -930,6 +947,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -961,6 +979,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -995,6 +1014,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -1026,6 +1046,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -1057,6 +1078,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -1091,6 +1113,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -1122,6 +1145,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -1153,6 +1177,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -1187,6 +1212,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -1218,6 +1244,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -1249,9 +1276,11 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
+
             estadoSRL: begin
                 if (COUNTER == 5'd0) begin
                     // dá load no registrador
@@ -1282,6 +1311,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -1313,6 +1343,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -1344,6 +1375,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     storeOp = 2'd0;
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -1377,7 +1409,8 @@ always @(posedge clk) begin
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
-                storeOP = 2'd0;
+                storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0; 
             end
             else if (COUNTER == 5'd1) begin
@@ -1409,6 +1442,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'b00;  ///
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
         end
@@ -1443,6 +1477,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0; 
             end
             else if (COUNTER == 5'd1) begin
@@ -1474,9 +1509,11 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'b01;  ///
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
         end
+        
         estadoBGT: begin
             if (COUNTER == 5'd0) begin
                 // faz o cálculo do >
@@ -1507,6 +1544,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0; 
             end
             else if (COUNTER == 5'd1) begin
@@ -1538,6 +1576,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'b01;  ///
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
         end
@@ -1572,6 +1611,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0; 
             end
             else if (COUNTER == 5'd1) begin
@@ -1603,6 +1643,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'b11;  ///
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
         end     
@@ -1637,6 +1678,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if(COUNTER == 4) begin
@@ -1668,6 +1710,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd1; ///
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 5) begin
@@ -1699,6 +1742,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
         end
@@ -1733,6 +1777,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if(COUNTER == 4) begin
@@ -1764,6 +1809,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd1;  ///
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 5) begin
@@ -1795,6 +1841,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
         end
@@ -1829,9 +1876,10 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0; 
             end
-            else if (COUNTER = 5'd1) begin
+            else if (COUNTER == 5'd1) begin
                 // escreve em PC o endereço do branch e volta para fetch
                 estados = fetch;
                 PCWrite = 1'd0;
@@ -1860,6 +1908,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'b11;  ///
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
         end
@@ -1894,9 +1943,10 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 storeOp = 2'd0;
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
-            else if (COUNTER == 5'd1 and Of == 0) begin
+            else if (COUNTER == 5'd1 && Of == 0) begin
                 // guarda no banco de registradores e volta pro estado de fetch
                 estados = fetch;
                 PCWrite = 1'd0; 
@@ -1925,6 +1975,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end 
             //else if(Of == 1) overflow TODO
@@ -1960,6 +2011,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if(COUNTER == 4) begin
@@ -1991,6 +2043,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd1; ///
                 storeOp = 2'd0;
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 5) begin
@@ -2022,6 +2075,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 storeOp = 2'd0;
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
         end
@@ -2056,6 +2110,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 storeOp = 2'd0;
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 4) begin
@@ -2087,6 +2142,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd1; ///
                 storeOp = 2'd2; ///
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 5 || COUNTER == 6) begin
@@ -2118,6 +2174,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd1; ///
                 storeOp = 2'd2; ///
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 7) begin
@@ -2149,6 +2206,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd1; ///
                 storeOp = 2'd2; ///
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
         end
@@ -2184,6 +2242,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 storeOp = 2'd0;
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 4) begin
@@ -2215,6 +2274,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd1; ///
                 storeOp = 2'd1; ///
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 5 || COUNTER == 6) begin
@@ -2246,6 +2306,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd1; ///
                 storeOp = 2'd1; ///
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 7) begin
@@ -2277,6 +2338,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd1; ///
                 storeOp = 2'd1; ///
                 BranchCtrl = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
         end
@@ -2312,6 +2374,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0; 
                     storeOp = 2'd0; ///
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 3) begin
@@ -2343,8 +2406,11 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0; 
                     storeOp = 2'd0; ///
                     BranchCtrl = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
+            end
+
             estadoADDIU: begin
                 if (COUNTER == 5'd0) begin
                     // realiza a soma com imediato
@@ -2375,6 +2441,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -2406,6 +2473,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end 
             end
@@ -2439,6 +2507,7 @@ always @(posedge clk) begin
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
                 storeOp = 2'd0;
+                AB_w = 0;
                 rst_out = 1'd0;
             end
             
@@ -2472,6 +2541,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if(COUNTER == 4) begin
@@ -2503,6 +2573,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd1; ///
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5) begin
@@ -2534,6 +2605,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -2568,6 +2640,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if(COUNTER == 4) begin
@@ -2599,6 +2672,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd1;  ///
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5) begin
@@ -2630,6 +2704,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end
@@ -2664,6 +2739,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if(COUNTER == 4) begin
@@ -2695,6 +2771,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd1; ///
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5) begin
@@ -2726,6 +2803,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     BranchCtrl = 2'd0;
                     storeOp = 2'd0;
+                    AB_w = 0;
                     rst_out = 1'd0;
                 end
             end

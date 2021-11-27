@@ -26,7 +26,7 @@ module cpu(
     wire MemDR_w;
     wire HI_w;
     wire LO_w;
-    wire NovoPcWrite = (PC_w | (PCWriteCond & MuxBranchCtrl_out));
+    wire NovoPcWrite = (PC_w || (PCWriteCond && MuxBranchCtrl_out));
 
     // Controllers with more than 1 bit
 
@@ -406,7 +406,8 @@ module cpu(
             MemDR_w,
             storeOp,
             BranchCtrl,
-            reset_out
+            AB_w,
+            reset
     );
     
 
