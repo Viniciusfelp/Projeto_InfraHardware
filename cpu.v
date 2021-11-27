@@ -11,7 +11,9 @@ module cpu(
     wire Gt;
     wire Lt;
 
-
+    // data wire perdido
+    wire MuxBranchCtrl_out;
+    
     // Controllers with 1 bit
     wire PC_w;
     wire PCWriteCond;
@@ -24,7 +26,7 @@ module cpu(
     wire MemDR_w;
     wire HI_w;
     wire LO_w;
-    
+    wire NovoPcWrite <= PC_w || (PCWriteCond && MuxBranchCtrl_out);
 
     // Controllers with more than 1 bit
 
@@ -44,6 +46,7 @@ module cpu(
     wire LOMuxCtrl;
     wire DIVA;
     wire DIVB;
+    wire [1:0] BranchCtrl;
 
     // Parts of the instructions
 
@@ -60,6 +63,8 @@ module cpu(
     wire [31:0] RegDeslInput;
     wire [4:0] RegDeslN; // TODO aqui é 32 bits ou 16?
     wire[4:0] WRITEREG_in;
+    wire ZeroNegado = ~Zero;
+    wire GtNegado = ~Gt;
 
     // Data wires with 32 bits
 
@@ -281,8 +286,6 @@ module cpu(
         Lt
     );
     
-    wire NovoPcWrite == PC_w || (PCWriteCond && Zero);
-
     Registrador ALUOut_(
         clk,
         reset,
@@ -353,7 +356,15 @@ module cpu(
         EPC_out,
         PC_in
     );
-
+    
+    MuxBranchCtrl MuxBranchCtrl_(
+        BranchCtrl,
+        Zero,
+        ZeroNegado,
+        Gt,
+        GtNegado,
+        MuxBranchCtrl_out
+    );
 
     Control_unit UnidadeDeControle(
             clk,
@@ -386,6 +397,7 @@ module cpu(
             DIVA,
             DIVB,
             MemDR_w,
+            BranchCtrl,
             reset_out
     );
     
