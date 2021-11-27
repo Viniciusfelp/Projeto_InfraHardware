@@ -21,6 +21,8 @@ module cpu(
     wire ALUOut_w;
     wire EPC_w;
     wire MemDR_w;
+    wire HI_w;
+    wire LO_w;
     
 
     // Controllers with more than 1 bit
@@ -37,6 +39,10 @@ module cpu(
     wire[2:0] M_PC_src;
     wire[3:0] M_WD;
     wire[2:0] Mux_addr;
+    wire HIMuxCtrl;
+    wire LOMuxCtrl;
+    wire DIVA;
+    wire DIVB;
 
     // Parts of the instructions
 
@@ -76,7 +82,8 @@ module cpu(
     wire[31:0] MEM_addr; //Endereço de memoria a ser carregado
     wire[31:0] PC_in; // Entrado do PC
     wire[31:0] tratamento; // Aquele negocio vermelho nao pensei em nome bom depois mudar
-
+    wire[31:0] MuxDivA_out;
+    wire[31:0] MuxDivB_out;
     wire[27:0] SL26to28_out;//Shiftleft2 que altera de 26 bits para 28
 
     ShiftLeft2_26to28 SL(offset, SL26to28_out);
@@ -95,6 +102,12 @@ module cpu(
     wire[31:0] Lt_out;
     wire[31:0] WD_out; // Saida do multiplexador do write data
 
+    wire [31:0] MultHI;
+    wire [31:0] DivHI;
+    wire [31:0] MultLO;
+    wire [31:0] DivLO;
+    wire [31:0] HIMux_out;
+    wire [31:0] LOMux_out;
 
     Registrador PC_(
         clk,
@@ -283,6 +296,50 @@ module cpu(
         EPC_out
     );
 
+    MuxHI MuxHI_ (
+        HIMuxCtrl,
+        MultHI,
+        DivHI,
+        HIMux_out
+    );
+
+    MuxLO MuxLO_ (
+        LOMuxCtrl,
+        DivLO,
+        MultLO,
+        LOMux_out
+    );
+
+    Registrador HI_ (
+        clk,
+        reset,
+        HI_w,
+        HIMux_out,
+        HI_out
+    );
+
+    Registrador LO_ (
+        clk,
+        reset,
+        LO_w,
+        LOMux_out,
+        LO_out
+    );
+
+    MuxDivA MuxDivA_ (
+        DIVA,
+        MemDR_out,
+        RegA_out,
+        MuxDivA_out
+    );
+
+    MuxDivB MuxDivB_ (
+        DIVB,
+        MEM_to_IR,
+        RegB_out,
+        MuxDivB_out
+    );
+
     // Multiplexador que define o valor do PC
     Mux_PC_src M_PC_src_(
         M_PC_src,
@@ -318,6 +375,12 @@ module cpu(
             ShiftN,
             ShiftInput,
             shiftCtrl,
+            HIMuxCtrl,
+            LOMuxCtrl,
+            HI_w,
+            LO_w,
+            DIVA,
+            DIVB,
             reset_out
     );
     

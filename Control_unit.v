@@ -35,6 +35,12 @@ module Control_unit (
             output reg [1:0] ShiftN,
             output reg [2:0] ShiftInput,
             output reg [2:0] shiftCtrl,
+            output reg HIMuxCtrl,
+            output reg LOMuxCtrl,
+            output reg HI_w,
+            output reg LO_w,
+            output reg DIVA,
+            output reg DIVB,
     
     // reset especial
 
@@ -130,7 +136,14 @@ always @(posedge clk) begin
             ShiftN = 2'd0;
             ShiftInput = 1'd0;
             shiftCtrl = 3'd0;
+            HIMuxCtrl = 1'd0,
+            LOMuxCtrl = 1'd0,
+            HI_w = 1'd0,
+            LO_w = 1'd0,
+            DIVA = 1'd0,
+            DIVB = 1'd0,
             rst_out = 1'd1;
+            
         end
         else begin
             estados = resetado;
@@ -150,6 +163,12 @@ always @(posedge clk) begin
             ShiftN = 2'd0;
             ShiftInput = 1'd0;
             shiftCtrl = 3'd0;
+            HIMuxCtrl = 1'd0,
+            LOMuxCtrl = 1'd0,
+            HI_w = 1'd0,
+            LO_w = 1'd0,
+            DIVA = 1'd0,
+            DIVB = 1'd0,
             rst_out = 1'd1;
         end
     end
@@ -174,6 +193,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                     if (COUNTER == 5'd2) begin
                         estados = intermFetchDecode;
@@ -204,6 +229,12 @@ always @(posedge clk) begin
                 ShiftN = 2'd0;
                 ShiftInput = 1'd0;
                 shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0,
+                LOMuxCtrl = 1'd0,
+                HI_w = 1'd0,
+                LO_w = 1'd0,
+                DIVA = 1'd0,
+                DIVB = 1'd0,
                 rst_out = 1'd0;
             end
 
@@ -227,6 +258,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end   
                 else if (COUNTER == 5'd5) begin
@@ -248,6 +285,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end      
                 else if (COUNTER == 5'd6) begin
@@ -298,6 +341,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end
@@ -322,6 +371,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -343,6 +398,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end
@@ -367,6 +428,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -388,6 +455,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end
@@ -411,6 +484,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -432,6 +511,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end
@@ -456,6 +541,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -477,6 +568,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end
@@ -500,6 +597,12 @@ always @(posedge clk) begin
                 ShiftN = 2'd0;
                 ShiftInput = 1'd0;
                 shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0,
+                LOMuxCtrl = 1'd0,
+                HI_w = 1'd0,
+                LO_w = 1'd0,
+                DIVA = 1'd0,
+                DIVB = 1'd0,
                 rst_out = 1'd0;
             end
 
@@ -523,6 +626,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -544,6 +653,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end
@@ -568,6 +683,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -589,6 +710,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end 
@@ -613,6 +740,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;  ///
                     ShiftInput = 1'd0;  ///
                     shiftCtrl = 3'b001;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -634,6 +767,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;  ///
                     ShiftInput = 1'd0;  ///
                     shiftCtrl = 3'b010;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -655,6 +794,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end
@@ -662,7 +807,7 @@ always @(posedge clk) begin
             estadoSLLV: begin
                 if (COUNTER == 5'd0) begin
                     // dá load no registrador
-                    estados = estadoSLL;
+                    estados = estadoSLLV;
                     PCWrite = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
@@ -679,11 +824,17 @@ always @(posedge clk) begin
                     ShiftN = 2'b10;  ///
                     ShiftInput = 1'b1;  ///
                     shiftCtrl = 3'b001;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
                     // faz o shift
-                    estados = estadoSLL;
+                    estados = estadoSLLV;
                     PCWrite = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
@@ -700,6 +851,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;  ///
                     ShiftInput = 1'd0;  ///
                     shiftCtrl = 3'b010;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -721,6 +878,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end
@@ -728,7 +891,7 @@ always @(posedge clk) begin
             estadoSRA: begin
                 if (COUNTER == 5'd0) begin
                     // dá load no registrador
-                    estados = estadoSLL;
+                    estados = estadoSRA;
                     PCWrite = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
@@ -745,11 +908,17 @@ always @(posedge clk) begin
                     ShiftN = 2'b00;  ///
                     ShiftInput = 1'b0;  ///
                     shiftCtrl = 3'b001;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
                     // faz o shift
-                    estados = estadoSLL;
+                    estados = estadoSRA;
                     PCWrite = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
@@ -766,6 +935,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;  ///
                     ShiftInput = 1'd0;  ///
                     shiftCtrl = 3'b100;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -787,6 +962,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end
@@ -794,7 +975,7 @@ always @(posedge clk) begin
             estadoSRAV: begin
                 if (COUNTER == 5'd0) begin
                     // dá load no registrador
-                    estados = estadoSLL;
+                    estados = estadoSRAV;
                     PCWrite = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
@@ -811,11 +992,17 @@ always @(posedge clk) begin
                     ShiftN = 2'b10;  ///
                     ShiftInput = 1'b1;  ///
                     shiftCtrl = 3'b001;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
                     // faz o shift
-                    estados = estadoSLL;
+                    estados = estadoSRAV;
                     PCWrite = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
@@ -832,6 +1019,12 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;  ///
                     ShiftInput = 1'd0;  ///
                     shiftCtrl = 3'b100;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -853,9 +1046,101 @@ always @(posedge clk) begin
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
                     rst_out = 1'd0;
                 end
             end
+
+            estadoSRL: begin
+                if (COUNTER == 5'd0) begin
+                    // dá load no registrador
+                    estados = estadoSRL;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'b00;  ///
+                    ShiftInput = 1'b0;  ///
+                    shiftCtrl = 3'b001;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // faz o shift
+                    estados = estadoSRL;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;  ///
+                    ShiftInput = 1'd0;  ///
+                    shiftCtrl = 3'b011;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd2) begin
+                    // escreve no banco de registradores e volta pra fetch
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'b1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'b11;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'b0111;  ///
+                    COUNTER = 5'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;  ///
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
+                    rst_out = 1'd0;
+                end
+            end
+
+
         endcase
     end
 end
