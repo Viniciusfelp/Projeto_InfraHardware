@@ -1468,7 +1468,7 @@ always @(posedge clk) begin
             end
             
             estadoLB: 
-                if (COUNTER == 1 or COUNTER == 2) begin  
+                if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
                     //seleciona o endereço de memória a ser lido
                     estados = estadoLB;
                     PCWrite = 1'd0;
@@ -1497,8 +1497,8 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
-                else if(COUNTER == 3) begin
-                    //seleciona o endereço de memória a ser lido e salva no Memory data register
+                else if(COUNTER == 4) begin
+                    //Escreve no Memory data register o valor lido da memória
                     estados = estadoLB;
                     PCWrite = 1'd0;
                     PCWriteCond = 1'd0;
@@ -1526,7 +1526,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd1; ///
                     rst_out = 1'd0;
                 end
-                else if (COUNTER == 4) begin
+                else if (COUNTER == 5) begin
                     //escreve no banco de registradores
                     estados = fetch;
                     PCWrite = 1'd0;
@@ -1558,7 +1558,7 @@ always @(posedge clk) begin
             end
 
             estadoLH: 
-                if (COUNTER == 1 or COUNTER == 2) begin  
+                if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
                     //seleciona o endereço de memória a ser lido
                     estados = estadoLB;
                     PCWrite = 1'd0;
@@ -1587,8 +1587,8 @@ always @(posedge clk) begin
                     MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
-                else if(COUNTER == 3) begin
-                    //seleciona o endereço de memória a ser lido e salva no Memory data register
+                else if(COUNTER == 4) begin
+                    //Escreve no Memory data register o valor lido da memória
                     estados = estadoLB;
                     PCWrite = 1'd0;
                     PCWriteCond = 1'd0;
@@ -1616,7 +1616,7 @@ always @(posedge clk) begin
                     MemDR_w = 1'd1;  ///
                     rst_out = 1'd0;
                 end
-                else if (COUNTER == 4) begin
+                else if (COUNTER == 5) begin
                     //escreve no banco de registradores
                     estados = fetch;
                     PCWrite = 1'd0;
@@ -1647,7 +1647,95 @@ always @(posedge clk) begin
                 end
             end
 
-
+            estadoLW: 
+                if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
+                    //seleciona o endereço de memória a ser lido
+                    estados = estadoLB;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd2;     ///
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd0;
+                    rst_out = 1'd0;
+                end
+                else if(COUNTER == 4) begin
+                    //Escreve no Memory data register o valor lido da memória
+                    estados = estadoLB;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd2;     ///
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd1; ///
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5) begin
+                    //escreve no banco de registradores
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b1;   ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0; ///
+                    MuxAddr = 3'd0;     
+                    ALUControl = 3'b000;    
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd3; ///
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd0;
+                    rst_out = 1'd0;
+                end
+            end
 
         endcase
     end
