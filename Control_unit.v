@@ -43,6 +43,7 @@ module Control_unit (
             output reg DIVA,
             output reg DIVB,
             output reg MemDR_w,
+            output reg storeOp,
             output reg [1:0] BranchCtrl,
     
     // reset especial
@@ -81,7 +82,10 @@ parameter estadoADDIU = 6'd19;
 parameter estadoLB = 6'd20;
 parameter estadoLH = 6'd21;
 parameter estadoLW = 6'd22;
-parameter estadoBNE = 6'd23;
+parameter estadoSB = 6'd23;
+parameter estadoSH = 6'd24;
+parameter estadoSW = 6'd25;
+parameter estadoBNQ = 6'd23;
 parameter estadoBGT = 6'd24;
 parameter estadoBLE = 6'd25;
 
@@ -157,6 +161,7 @@ always @(posedge clk) begin
             DIVA = 1'd0; 
             DIVB = 1'd0; 
             MemDR_w = 1'd0;
+            storeOp = 2'd0;
             BranchCtrl = 2'd0;
             rst_out = 1'd1;
             
@@ -187,6 +192,7 @@ always @(posedge clk) begin
             DIVA = 1'd0; 
             DIVB = 1'd0; 
             MemDR_w = 1'd0;
+            storeOp = 2'd0;
             BranchCtrl = 2'd0;
             rst_out = 1'd1;
         end
@@ -220,6 +226,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                     if (COUNTER == 5'd2) begin
@@ -259,6 +266,7 @@ always @(posedge clk) begin
                 DIVA = 1'd0; 
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
+                storeOp = 2'd0;
                 BranchCtrl = 2'd0;
                 rst_out = 1'd0;
             end
@@ -291,6 +299,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end   
@@ -321,6 +330,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end      
@@ -400,6 +410,13 @@ always @(posedge clk) begin
                         LB: begin
                             estados = estadoLB;
                         end
+                        SB: begin
+                            estados = estadoSB;
+                        end
+                        SH: begin
+                            estados = estadoSH;
+                        end
+                        SW
                     endcase
                     PCWrite = 1'd0;
                     PCWriteCond = 1'd0;
@@ -425,6 +442,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -458,6 +476,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -488,6 +507,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -521,6 +541,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -551,6 +572,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -583,6 +605,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -613,6 +636,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -646,6 +670,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -676,6 +701,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -708,6 +734,7 @@ always @(posedge clk) begin
                 DIVA = 1'd0; 
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
+                storeOp = 2'd0;
                 BranchCtrl = 2'd0;
                 rst_out = 1'd0;
             end
@@ -740,6 +767,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -770,6 +798,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -803,6 +832,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -833,6 +863,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -866,6 +897,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -896,6 +928,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -926,6 +959,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -959,6 +993,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -989,6 +1024,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -1019,6 +1055,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -1052,6 +1089,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -1082,6 +1120,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -1112,6 +1151,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -1145,6 +1185,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -1175,6 +1216,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -1205,11 +1247,11 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
             end
-
             estadoSRL: begin
                 if (COUNTER == 5'd0) begin
                     // dá load no registrador
@@ -1238,6 +1280,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -1268,6 +1311,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -1298,6 +1342,7 @@ always @(posedge clk) begin
                     DIVA = 1'd0; 
                     DIVB = 1'd0; 
                     MemDR_w = 1'd0;
+                    storeOp = 2'd0;
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
@@ -1332,6 +1377,7 @@ always @(posedge clk) begin
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
+                storeOP = 2'd0;
                 rst_out = 1'd0; 
             end
             else if (COUNTER == 5'd1) begin
@@ -1362,10 +1408,11 @@ always @(posedge clk) begin
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'b00;  ///
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
         end
-        
+
         estadoBNE: begin
             if (COUNTER == 5'd0) begin
                 // faz o cálculo da desigualdade
@@ -1395,6 +1442,7 @@ always @(posedge clk) begin
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0; 
             end
             else if (COUNTER == 5'd1) begin
@@ -1425,10 +1473,10 @@ always @(posedge clk) begin
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'b01;  ///
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
         end
-
         estadoBGT: begin
             if (COUNTER == 5'd0) begin
                 // faz o cálculo do >
@@ -1458,6 +1506,7 @@ always @(posedge clk) begin
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0; 
             end
             else if (COUNTER == 5'd1) begin
@@ -1488,6 +1537,7 @@ always @(posedge clk) begin
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'b01;  ///
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
         end
@@ -1521,6 +1571,7 @@ always @(posedge clk) begin
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0; 
             end
             else if (COUNTER == 5'd1) begin
@@ -1551,167 +1602,11 @@ always @(posedge clk) begin
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'b11;  ///
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
-        end
-        
-        estadoADDI: begin
-            if (COUNTER == 5'd0) begin
-                // realiza a soma com o imediato
-                estados = estadoADDI;
-                PCWrite = 1'd0;
-                PCWriteCond = 1'd0;
-                MemWR = 1'd0;
-                IRWrite = 1'd0;
-                ALUSrcA = 2'b10;  ///
-                ALUSrcB = 2'b10;  ///
-                RegWrite = 1'd0;
-                ALUOut_w = 1'd0;
-                RegWriteMUX = 2'd0;
-                MuxAddr = 3'd0;
-                ALUControl = 3'b001;  ///
-                PCSrc = 3'd0;
-                WriteDataCtrl = 4'd0;
-                COUNTER = COUNTER + 1;
-                ShiftN = 2'd0;
-                ShiftInput = 1'd0;
-                shiftCtrl = 3'd0;
-                HIMuxCtrl = 1'd0; 
-                LOMuxCtrl = 1'd0; 
-                HI_w = 1'd0; 
-                LO_w = 1'd0; 
-                DIVA = 1'd0; 
-                DIVB = 1'd0; 
-                MemDR_w = 1'd0;
-                BranchCtrl = 2'd0;
-                rst_out = 1'd0;
-            end
-            else if (COUNTER == 5'd1 && Of == 0) begin
-                // guarda no banco de registradores e volta pro estado de fetch
-                estados = fetch;
-                PCWrite = 1'd0; 
-                PCWriteCond = 1'd0;
-                MemWR = 1'd0;
-                IRWrite = 1'd0;
-                ALUSrcA = 2'd0;  ///
-                ALUSrcB = 2'd0;  ///
-                RegWrite = 1'd1;  ///
-                ALUOut_w = 1'd0;
-                RegWriteMUX = 2'd3;  ///
-                MuxAddr = 3'd0;
-                ALUControl = 3'b000;  ///
-                PCSrc = 3'd0;
-                WriteDataCtrl = 4'd5;  ///
-                COUNTER = 5'd0;
-                ShiftN = 2'd0;
-                ShiftInput = 1'd0;
-                shiftCtrl = 3'd0;
-                HIMuxCtrl = 1'd0; 
-                LOMuxCtrl = 1'd0; 
-                HI_w = 1'd0; 
-                LO_w = 1'd0; 
-                DIVA = 1'd0; 
-                DIVB = 1'd0; 
-                MemDR_w = 1'd0;
-                BranchCtrl = 2'd0;
-                rst_out = 1'd0;
-            end 
-            //else if(Of == 1) overflow TODO
-        end
+        end     
 
-        estadoADDIU: begin
-            if (COUNTER == 5'd0) begin
-                // realiza a soma com imediato
-                estados = estadoADDIU;
-                PCWrite = 1'd0;
-                PCWriteCond = 1'd0;
-                MemWR = 1'd0;
-                IRWrite = 1'd0;
-                ALUSrcA = 2'b10;  ///
-                ALUSrcB = 2'b10;  ///
-                RegWrite = 1'd0;
-                ALUOut_w = 1'd0;
-                RegWriteMUX = 2'd0;
-                MuxAddr = 3'd0;
-                ALUControl = 3'b001;  ///
-                PCSrc = 3'd0;
-                WriteDataCtrl = 4'd0;
-                COUNTER = COUNTER + 1;
-                ShiftN = 2'd0;
-                ShiftInput = 1'd0;
-                shiftCtrl = 3'd0;
-                HIMuxCtrl = 1'd0; 
-                LOMuxCtrl = 1'd0; 
-                HI_w = 1'd0; 
-                LO_w = 1'd0; 
-                DIVA = 1'd0; 
-                DIVB = 1'd0; 
-                MemDR_w = 1'd0;
-                BranchCtrl = 2'd0;
-                rst_out = 1'd0;
-            end
-            else if (COUNTER == 5'd1) begin
-                // guarda no banco de registradores e volta pro estado de fetch
-                estados = fetch;
-                PCWrite = 1'd0; 
-                PCWriteCond = 1'd0;
-                MemWR = 1'd0;
-                IRWrite = 1'd0;
-                ALUSrcA = 2'd0;  ///
-                ALUSrcB = 2'd0;  ///
-                RegWrite = 1'd1;  ///
-                ALUOut_w = 1'd0;
-                RegWriteMUX = 2'd3;  ///
-                MuxAddr = 3'd0;
-                ALUControl = 3'b000;  ///
-                PCSrc = 3'd0;
-                WriteDataCtrl = 4'd5;  ///
-                COUNTER = 5'd0;
-                ShiftN = 2'd0;
-                ShiftInput = 1'd0;
-                shiftCtrl = 3'd0;
-                HIMuxCtrl = 1'd0; 
-                LOMuxCtrl = 1'd0; 
-                HI_w = 1'd0; 
-                LO_w = 1'd0; 
-                DIVA = 1'd0; 
-                DIVB = 1'd0; 
-                MemDR_w = 1'd0;
-                BranchCtrl = 2'd0;
-                rst_out = 1'd0;
-            end 
-        end
-        estadoJ: begin
-            //Escreve em PC o valor do jump e vai para o fetch
-            estados = fetch;
-            PCWrite = 1'd1; ///
-            PCWriteCond = 1'd0;
-            MemWR = 1'd0;
-            IRWrite = 1'd0;
-            ALUSrcA = 2'd0; 
-            ALUSrcB = 2'd0;
-            RegWrite = 1'd0;
-            ALUOut_w = 1'd0;
-            RegWriteMUX = 2'd0;
-            MuxAddr = 3'd0;
-            ALUControl = 3'b000;
-            PCSrc = 3'b010;  ///
-            WriteDataCtrl = 4'd0;
-            COUNTER = 5'd0;
-            ShiftN = 2'd0;
-            ShiftInput = 1'd0;
-            shiftCtrl = 3'd0;
-            HIMuxCtrl = 1'd0; 
-            LOMuxCtrl = 1'd0; 
-            HI_w = 1'd0; 
-            LO_w = 1'd0; 
-            DIVA = 1'd0; 
-            DIVB = 1'd0; 
-            MemDR_w = 1'd0;
-            BranchCtrl = 2'd0;
-            rst_out = 1'd0;
-        end
-        
         estadoLB: begin
             if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
                 //seleciona o endereço de memória a ser lido
@@ -1741,6 +1636,7 @@ always @(posedge clk) begin
                 DIVB = 1'd0;
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
             else if(COUNTER == 4) begin
@@ -1755,7 +1651,7 @@ always @(posedge clk) begin
                 RegWrite = 1'b0;
                 ALUOut_w = 1'd0;
                 RegWriteMUX = 2'd0;
-                MuxAddr = 3'd2;     ///
+                MuxAddr = 3'd0;     ///
                 ALUControl = 3'b000;  
                 PCSrc = 3'd0;
                 WriteDataCtrl = 4'd0;
@@ -1771,6 +1667,7 @@ always @(posedge clk) begin
                 DIVB = 1'd0;
                 MemDR_w = 1'd1; ///
                 BranchCtrl = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 5) begin
@@ -1801,6 +1698,7 @@ always @(posedge clk) begin
                 DIVB = 1'd0;
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
         end
@@ -1808,7 +1706,7 @@ always @(posedge clk) begin
         estadoLH: begin
             if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
                 //seleciona o endereço de memória a ser lido
-                estados = estadoLB;
+                estados = estadoLH;
                 PCWrite = 1'd0;
                 PCWriteCond = 1'd0;
                 MemWR = 1'd0;      ///
@@ -1834,11 +1732,12 @@ always @(posedge clk) begin
                 DIVB = 1'd0;
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
             else if(COUNTER == 4) begin
                 //Escreve no Memory data register o valor lido da memória
-                estados = estadoLB;
+                estados = estadoLH;
                 PCWrite = 1'd0;
                 PCWriteCond = 1'd0;
                 MemWR = 1'd0;      ///
@@ -1848,7 +1747,7 @@ always @(posedge clk) begin
                 RegWrite = 1'b0;
                 ALUOut_w = 1'd0;
                 RegWriteMUX = 2'd0;
-                MuxAddr = 3'd2;     ///
+                MuxAddr = 3'd0;     ///
                 ALUControl = 3'b000;  
                 PCSrc = 3'd0;
                 WriteDataCtrl = 4'd0;
@@ -1864,6 +1763,7 @@ always @(posedge clk) begin
                 DIVB = 1'd0;
                 MemDR_w = 1'd1;  ///
                 BranchCtrl = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
             else if (COUNTER == 5) begin
@@ -1894,14 +1794,146 @@ always @(posedge clk) begin
                 DIVB = 1'd0;
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
+        end
+
+        estadoBLE: begin
+            if (COUNTER == 5'd0) begin
+                // faz o cálculo do <=
+                estados = estadoBEQ;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd0;
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b10;  ///
+                ALUSrcB = 2'b00;  ///
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd0;
+                ALUControl = 3'b111;  ///
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = COUNTER + 1;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0; 
+                LOMuxCtrl = 1'd0; 
+                HI_w = 1'd0; 
+                LO_w = 1'd0; 
+                DIVA = 1'd0; 
+                DIVB = 1'd0; 
+                MemDR_w = 1'd0;
+                BranchCtrl = 2'd0;
+                storeOp = 2'd0;
+                rst_out = 1'd0; 
+            end
+            else if (COUNTER = 5'd1) begin
+                // escreve em PC o endereço do branch e volta para fetch
+                estados = fetch;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd1;  ///
+                MemWR = 1'd0;
+                IRWrite = 1'd0;
+                ALUSrcA = 2'd0;
+                ALUSrcB = 2'd0;
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd0;
+                ALUControl = 3'b000;
+                PCSrc = 3'd1;  ///
+                WriteDataCtrl = 4'd0;
+                COUNTER = 5'd0;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0; 
+                LOMuxCtrl = 1'd0; 
+                HI_w = 1'd0; 
+                LO_w = 1'd0; 
+                DIVA = 1'd0; 
+                DIVB = 1'd0; 
+                MemDR_w = 1'd0;
+                BranchCtrl = 2'b11;  ///
+                storeOp = 2'd0;
+                rst_out = 1'd0;
+            end
+        end
+            
+        estadoADDI: begin
+            if (COUNTER == 5'd0) begin
+                // realiza a soma com o imediato
+                estados = estadoADDI;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd0;
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b10;  ///
+                ALUSrcB = 2'b10;  ///
+                RegWrite = 1'd0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd0;
+                ALUControl = 3'b001;  ///
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = COUNTER + 1;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0; 
+                LOMuxCtrl = 1'd0; 
+                HI_w = 1'd0; 
+                LO_w = 1'd0; 
+                DIVA = 1'd0; 
+                DIVB = 1'd0; 
+                MemDR_w = 1'd0;
+                storeOp = 2'd0;
+                BranchCtrl = 2'd0;
+                rst_out = 1'd0;
+            end
+            else if (COUNTER == 5'd1 and Of == 0) begin
+                // guarda no banco de registradores e volta pro estado de fetch
+                estados = fetch;
+                PCWrite = 1'd0; 
+                PCWriteCond = 1'd0;
+                MemWR = 1'd0;
+                IRWrite = 1'd0;
+                ALUSrcA = 2'd0;  ///
+                ALUSrcB = 2'd0;  ///
+                RegWrite = 1'd1;  ///
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd3;  ///
+                MuxAddr = 3'd0;
+                ALUControl = 3'b000;  ///
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd5;  ///
+                COUNTER = 5'd0;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0; 
+                LOMuxCtrl = 1'd0; 
+                HI_w = 1'd0; 
+                LO_w = 1'd0; 
+                DIVA = 1'd0; 
+                DIVB = 1'd0; 
+                MemDR_w = 1'd0;
+                BranchCtrl = 2'd0;
+                storeOp = 2'd0;
+                rst_out = 1'd0;
+            end 
+            //else if(Of == 1) overflow TODO
         end
 
         estadoLW: begin
             if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
                 //seleciona o endereço de memória a ser lido
-                estados = estadoLB;
+                estados = estadoLW;
                 PCWrite = 1'd0;
                 PCWriteCond = 1'd0;
                 MemWR = 1'd0;      ///
@@ -1927,11 +1959,12 @@ always @(posedge clk) begin
                 DIVB = 1'd0;
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0;
             end
             else if(COUNTER == 4) begin
                 //Escreve no Memory data register o valor lido da memória
-                estados = estadoLB;
+                estados = estadoLW;
                 PCWrite = 1'd0;
                 PCWriteCond = 1'd0;
                 MemWR = 1'd0;      ///
@@ -1941,7 +1974,7 @@ always @(posedge clk) begin
                 RegWrite = 1'b0;
                 ALUOut_w = 1'd0;
                 RegWriteMUX = 2'd0;
-                MuxAddr = 3'd2;     ///
+                MuxAddr = 3'd0;     ///
                 ALUControl = 3'b000;  
                 PCSrc = 3'd0;
                 WriteDataCtrl = 4'd0;
@@ -1956,6 +1989,7 @@ always @(posedge clk) begin
                 DIVA = 1'd0;
                 DIVB = 1'd0;
                 MemDR_w = 1'd1; ///
+                storeOp = 2'd0;
                 BranchCtrl = 2'd0;
                 rst_out = 1'd0;
             end
@@ -1986,11 +2020,715 @@ always @(posedge clk) begin
                 DIVA = 1'd0;
                 DIVB = 1'd0;
                 MemDR_w = 1'd0;
+                storeOp = 2'd0;
                 BranchCtrl = 2'd0;
                 rst_out = 1'd0;
             end
         end
 
+        estadoSB: begin
+            if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
+                //seleciona o endereço de memória a ser lido
+                estados = estadoSB;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd0;      ///
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b00;  
+                ALUSrcB = 2'b00;  
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd2;     ///
+                ALUControl = 3'b000;  
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = COUNTER + 1;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0;
+                LOMuxCtrl = 1'd0;
+                HI_w = 1'd0;
+                LO_w = 1'd0;
+                DIVA = 1'd0;
+                DIVB = 1'd0;
+                MemDR_w = 1'd0;
+                storeOp = 2'd0;
+                BranchCtrl = 2'd0;
+                rst_out = 1'd0;
+            end
+            else if (COUNTER == 4) begin
+                //Escreve no Memory data register o valor lido da memória e faz o tratamento da entrada para ser armazenado
+                estados = estadoSB;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd0;      ///
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b00;  
+                ALUSrcB = 2'b00;  
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd2;     ///
+                ALUControl = 3'b000;  
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = COUNTER + 1;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0;
+                LOMuxCtrl = 1'd0;
+                HI_w = 1'd0;
+                LO_w = 1'd0;
+                DIVA = 1'd0;
+                DIVB = 1'd0;
+                MemDR_w = 1'd1; ///
+                storeOp = 2'd2; ///
+                BranchCtrl = 2'd0;
+                rst_out = 1'd0;
+            end
+            else if (COUNTER == 5 || COUNTER == 6) begin
+                //escreve na memoria
+                estados = estadoSB;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd1;      ///
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b00;  
+                ALUSrcB = 2'b00;  
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd2;   ///  
+                ALUControl = 3'b000;  
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = COUNTER + 1;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0;
+                LOMuxCtrl = 1'd0;
+                HI_w = 1'd0;
+                LO_w = 1'd0;
+                DIVA = 1'd0;
+                DIVB = 1'd0;
+                MemDR_w = 1'd1; ///
+                storeOp = 2'd2; ///
+                BranchCtrl = 2'd0;
+                rst_out = 1'd0;
+            end
+            else if (COUNTER == 7) begin
+                //termina de escrever na memoria e muda o proximo estado para de fetch
+                estados = fetch;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd1;      ///
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b00;  
+                ALUSrcB = 2'b00;  
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd2;   ///  
+                ALUControl = 3'b000;  
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = 0;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0;
+                LOMuxCtrl = 1'd0;
+                HI_w = 1'd0;
+                LO_w = 1'd0;
+                DIVA = 1'd0;
+                DIVB = 1'd0;
+                MemDR_w = 1'd1; ///
+                storeOp = 2'd2; ///
+                BranchCtrl = 2'd0;
+                rst_out = 1'd0;
+            end
+        end
+        
+        //StoreHALF
+        estadoSH: begin
+            if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
+                //seleciona o endereço de memória a ser lido
+                estados = estadoSB;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd0;      ///
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b00;  
+                ALUSrcB = 2'b00;  
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd2;     ///
+                ALUControl = 3'b000;  
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = COUNTER + 1;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0;
+                LOMuxCtrl = 1'd0;
+                HI_w = 1'd0;
+                LO_w = 1'd0;
+                DIVA = 1'd0;
+                DIVB = 1'd0;
+                MemDR_w = 1'd0;
+                storeOp = 2'd0;
+                BranchCtrl = 2'd0;
+                rst_out = 1'd0;
+            end
+            else if (COUNTER == 4) begin
+                //Escreve no Memory data register o valor lido da memória e faz o tratamento da entrada para ser armazenado
+                estados = estadoSB;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd0;      ///
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b00;  
+                ALUSrcB = 2'b00;  
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd2;     ///
+                ALUControl = 3'b000;  
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = COUNTER + 1;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0;
+                LOMuxCtrl = 1'd0;
+                HI_w = 1'd0;
+                LO_w = 1'd0;
+                DIVA = 1'd0;
+                DIVB = 1'd0;
+                MemDR_w = 1'd1; ///
+                storeOp = 2'd1; ///
+                BranchCtrl = 2'd0;
+                rst_out = 1'd0;
+            end
+            else if (COUNTER == 5 || COUNTER == 6) begin
+                //escreve na memoria
+                estados = estadoSB;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd1;      ///
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b00;  
+                ALUSrcB = 2'b00;  
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd2;   ///  
+                ALUControl = 3'b000;  
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = COUNTER + 1;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0;
+                LOMuxCtrl = 1'd0;
+                HI_w = 1'd0;
+                LO_w = 1'd0;
+                DIVA = 1'd0;
+                DIVB = 1'd0;
+                MemDR_w = 1'd1; ///
+                storeOp = 2'd1; ///
+                BranchCtrl = 2'd0;
+                rst_out = 1'd0;
+            end
+            else if (COUNTER == 7) begin
+                //termina de escrever na memoria e muda o proximo estado para de fetch
+                estados = fetch;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd1;      ///
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b00;  
+                ALUSrcB = 2'b00;  
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd2;   ///  
+                ALUControl = 3'b000;  
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = 0;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0;
+                LOMuxCtrl = 1'd0;
+                HI_w = 1'd0;
+                LO_w = 1'd0;
+                DIVA = 1'd0;
+                DIVB = 1'd0;
+                MemDR_w = 1'd1; ///
+                storeOp = 2'd1; ///
+                BranchCtrl = 2'd0;
+                rst_out = 1'd0;
+            end
+        end
+
+            //Storeword
+            estadoSW: begin
+                if (COUNTER == 1 || COUNTER == 2) begin
+                    //pegar o valor do registrador b para armazená-lo na memoria
+                    estados = estadoSW;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd1;      ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd2;     ///
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd0; 
+                    storeOp = 2'd0; ///
+                    BranchCtrl = 2'd0;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 3) begin
+                    //termina de escrever na memoria e muda o proximo estado para o de fetch
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd1;      ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd2;     ///
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = 0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd0; 
+                    storeOp = 2'd0; ///
+                    BranchCtrl = 2'd0;
+                    rst_out = 1'd0;
+                end
+            estadoADDIU: begin
+                if (COUNTER == 5'd0) begin
+                    // realiza a soma com imediato
+                    estados = estadoADDIU;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b10;  ///
+                    ALUSrcB = 2'b10;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b001;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0; 
+                    LOMuxCtrl = 1'd0; 
+                    HI_w = 1'd0; 
+                    LO_w = 1'd0; 
+                    DIVA = 1'd0; 
+                    DIVB = 1'd0; 
+                    MemDR_w = 1'd0;
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // guarda no banco de registradores e volta pro estado de fetch
+                    estados = fetch;
+                    PCWrite = 1'd0; 
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd3;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd5;  ///
+                    COUNTER = 5'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0; 
+                    LOMuxCtrl = 1'd0; 
+                    HI_w = 1'd0; 
+                    LO_w = 1'd0; 
+                    DIVA = 1'd0; 
+                    DIVB = 1'd0; 
+                    MemDR_w = 1'd0;
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end 
+            end
+
+            estadoJ: begin
+                //Escreve em PC o valor do jump e vai para o fetch
+                estados = fetch;
+                PCWrite = 1'd1; ///
+                PCWriteCond = 1'd0;
+                MemWR = 1'd0;
+                IRWrite = 1'd0;
+                ALUSrcA = 2'd0; 
+                ALUSrcB = 2'd0;
+                RegWrite = 1'd0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd0;
+                ALUControl = 3'b000;
+                PCSrc = 3'b010;  ///
+                WriteDataCtrl = 4'd0;
+                COUNTER = 5'd0;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0; 
+                LOMuxCtrl = 1'd0; 
+                HI_w = 1'd0; 
+                LO_w = 1'd0; 
+                DIVA = 1'd0; 
+                DIVB = 1'd0; 
+                MemDR_w = 1'd0;
+                BranchCtrl = 2'd0;
+                storeOp = 2'd0;
+                rst_out = 1'd0;
+            end
+            
+            estadoLB: begin
+                if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
+                    //seleciona o endereço de memória a ser lido
+                    estados = estadoLB;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd2;     ///
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd0;
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end
+                else if(COUNTER == 4) begin
+                    //Escreve no Memory data register o valor lido da memória
+                    estados = estadoLB;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd2;     ///
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd1; ///
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5) begin
+                    //escreve no banco de registradores
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b1;   ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0; ///
+                    MuxAddr = 3'd0;     
+                    ALUControl = 3'b000;    
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0; ///
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd0;
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end
+            end
+
+            estadoLH: begin
+                if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
+                    //seleciona o endereço de memória a ser lido
+                    estados = estadoLB;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd2;     ///
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd0;
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end
+                else if(COUNTER == 4) begin
+                    //Escreve no Memory data register o valor lido da memória
+                    estados = estadoLB;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd2;     ///
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd1;  ///
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5) begin
+                    //escreve no banco de registradores
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b1;   ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0; ///
+                    MuxAddr = 3'd0;     
+                    ALUControl = 3'b000;   
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd1; ///
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd0;
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end
+            end
+
+            estadoLW: begin
+                if (COUNTER == 1 || COUNTER == 2 || COUNTER == 3) begin  
+                    //seleciona o endereço de memória a ser lido
+                    estados = estadoLB;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd2;     ///
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd0;
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end
+                else if(COUNTER == 4) begin
+                    //Escreve no Memory data register o valor lido da memória
+                    estados = estadoLB;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd2;     ///
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd1; ///
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5) begin
+                    //escreve no banco de registradores
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
+                    MemWR = 1'd0;      
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b00;  
+                    ALUSrcB = 2'b00;  
+                    RegWrite = 1'b1;   ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0; ///
+                    MuxAddr = 3'd0;     
+                    ALUControl = 3'b000;    
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd3; ///
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0;
+                    LOMuxCtrl = 1'd0;
+                    HI_w = 1'd0;
+                    LO_w = 1'd0;
+                    DIVA = 1'd0;
+                    DIVB = 1'd0;
+                    MemDR_w = 1'd0;
+                    BranchCtrl = 2'd0;
+                    storeOp = 2'd0;
+                    rst_out = 1'd0;
+                end
+            end
         endcase
     end
 end
