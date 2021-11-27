@@ -85,9 +85,9 @@ parameter estadoLW = 6'd22;
 parameter estadoSB = 6'd23;
 parameter estadoSH = 6'd24;
 parameter estadoSW = 6'd25;
-parameter estadoBNQ = 6'd23;
-parameter estadoBGT = 6'd24;
-parameter estadoBLE = 6'd25;
+parameter estadoBNE = 6'd26;
+parameter estadoBGT = 6'd27;
+parameter estadoBLE = 6'd28;
 
 //opcodes
 parameter R_TYPE = 6'd0;
@@ -130,7 +130,9 @@ parameter RTE = 6'd19;
 parameter DIVM = 6'd5;
 
 initial begin
-    //227 no reg 29
+    WriteDataCtrl = 4'b1010;
+    RegWriteMUX = 2'b01;
+    RegWrite = 1'b1;
     rst_out = 1'b1;
 end
 always @(posedge clk) begin
@@ -416,7 +418,9 @@ always @(posedge clk) begin
                         SH: begin
                             estados = estadoSH;
                         end
-                        SW
+                        SW: begin
+									 estados = estadoSW;
+								end
                     endcase
                     PCWrite = 1'd0;
                     PCWriteCond = 1'd0;
@@ -1377,7 +1381,7 @@ always @(posedge clk) begin
                 DIVB = 1'd0; 
                 MemDR_w = 1'd0;
                 BranchCtrl = 2'd0;
-                storeOP = 2'd0;
+                storeOp = 2'd0;
                 rst_out = 1'd0; 
             end
             else if (COUNTER == 5'd1) begin
@@ -1831,7 +1835,7 @@ always @(posedge clk) begin
                 storeOp = 2'd0;
                 rst_out = 1'd0; 
             end
-            else if (COUNTER = 5'd1) begin
+            else if (COUNTER == 5'd1) begin
                 // escreve em PC o endereço do branch e volta para fetch
                 estados = fetch;
                 PCWrite = 1'd0;
@@ -1896,7 +1900,7 @@ always @(posedge clk) begin
                 BranchCtrl = 2'd0;
                 rst_out = 1'd0;
             end
-            else if (COUNTER == 5'd1 and Of == 0) begin
+            else if (COUNTER == 5'd1 && Of == 0) begin
                 // guarda no banco de registradores e volta pro estado de fetch
                 estados = fetch;
                 PCWrite = 1'd0; 
@@ -2345,6 +2349,7 @@ always @(posedge clk) begin
                     BranchCtrl = 2'd0;
                     rst_out = 1'd0;
                 end
+            end
             estadoADDIU: begin
                 if (COUNTER == 5'd0) begin
                     // realiza a soma com imediato
