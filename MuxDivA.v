@@ -6,7 +6,7 @@ module MuxDivA (
 );
 
   always @(*) begin
-    MuxDivA_out = (DIVA ? MemDR_out : MultHI);
+    MuxDivA_out = (DIVA ? MemDR_out : RegA_out);
   end
 endmodule
 

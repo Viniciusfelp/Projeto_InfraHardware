@@ -4,7 +4,7 @@ module Control_unit (
 
     // Flags
 
-    input wire O,
+    input wire Of,
     input wire LT,
     input wire GT,
 
@@ -81,7 +81,7 @@ parameter estadoADDIU = 6'd19;
 parameter estadoLB = 6'd20;
 parameter estadoLH = 6'd21;
 parameter estadoLW = 6'd22;
-parameter estadoBNQ = 6'd23;
+parameter estadoBNE = 6'd23;
 parameter estadoBGT = 6'd24;
 parameter estadoBLE = 6'd25;
 
@@ -373,14 +373,14 @@ always @(posedge clk) begin
                         BEQ: begin
                             estados = estadoBEQ;
                         end
-                        BNQ: begin
-                            estados = estadoBNQ;
+                        BNE: begin
+                            estados = estadoBNE;
                         end
                         BGT: begin
                             estados = estadoBGT;
                         end
                         BLE: begin
-                            estados = estadoBLE
+                            estados = estadoBLE;
                         end
                         LH: begin
                             estados = estadoLH;
@@ -1334,7 +1334,7 @@ always @(posedge clk) begin
                 BranchCtrl = 2'd0;
                 rst_out = 1'd0; 
             end
-            else if (COUNTER = 5'd1) begin
+            else if (COUNTER == 5'd1) begin
                 // escreve em PC o endereço do branch e volta para fetch
                 estados = fetch;
                 PCWrite = 1'd0;
@@ -1366,10 +1366,10 @@ always @(posedge clk) begin
             end
         end
         
-        estadoBNQ: begin
+        estadoBNE: begin
             if (COUNTER == 5'd0) begin
                 // faz o cálculo da desigualdade
-                estados = estadoBNQ;
+                estados = estadoBNE;
                 PCWrite = 1'd0;
                 PCWriteCond = 1'd0;
                 MemWR = 1'd0;
@@ -1397,7 +1397,7 @@ always @(posedge clk) begin
                 BranchCtrl = 2'd0;
                 rst_out = 1'd0; 
             end
-            else if (COUNTER = 5'd1) begin
+            else if (COUNTER == 5'd1) begin
                 // escreve em PC o endereço do branch e volta para fetch
                 estados = fetch;
                 PCWrite = 1'd0;
@@ -1460,7 +1460,7 @@ always @(posedge clk) begin
                 BranchCtrl = 2'd0;
                 rst_out = 1'd0; 
             end
-            else if (COUNTER = 5'd1) begin
+            else if (COUNTER == 5'd1) begin
                 // escreve em PC o endereço do branch e volta para fetch
                 estados = fetch;
                 PCWrite = 1'd0;
@@ -1523,7 +1523,7 @@ always @(posedge clk) begin
                 BranchCtrl = 2'd0;
                 rst_out = 1'd0; 
             end
-            else if (COUNTER = 5'd1) begin
+            else if (COUNTER == 5'd1) begin
                 // escreve em PC o endereço do branch e volta para fetch
                 estados = fetch;
                 PCWrite = 1'd0;
@@ -1586,7 +1586,7 @@ always @(posedge clk) begin
                 BranchCtrl = 2'd0;
                 rst_out = 1'd0;
             end
-            else if (COUNTER == 5'd1 and Of == 0) begin
+            else if (COUNTER == 5'd1 && Of == 0) begin
                 // guarda no banco de registradores e volta pro estado de fetch
                 estados = fetch;
                 PCWrite = 1'd0; 

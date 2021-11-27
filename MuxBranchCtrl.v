@@ -1,7 +1,7 @@
 module MuxBranchCtrl (
   input wire [1:0]  BranchCtrl,
   input wire Zero,
-  input wire ZeroNegado = ~Zero,
+  input wire ZeroNegado,
   input wire Gt,
   input wire GtNegado,
 
