@@ -13,7 +13,7 @@ module Control_unit (
     input wire [5:0] OPCODE,
     input wire [5:0] funct,
 
-    // Sinais de controle de
+    // Sinais de controle
 
             output reg PCWrite,
             output reg MemWR,
@@ -26,14 +26,15 @@ module Control_unit (
             output reg ALUOut_w,
             output reg [1:0] RegWriteMUX,
 
-        // 3 bits
+
             output reg [2:0] MuxAddr,
             output reg [2:0] ALUControl,
             output reg [2:0] PCSrc,
 
             output reg [3:0] WriteDataCtrl,
-            output reg [1:0] ShifN,
-            output reg [1:0] ShifInput,
+            output reg [1:0] ShiftN,
+            output reg [2:0] ShiftInput,
+            output reg [2:0] shiftCtrl,
     
     // reset especial
 
@@ -59,6 +60,11 @@ parameter estadoSLT = 6'd7;
 parameter estadoRTE = 6'd8;
 parameter estadoBREAK = 6'd9;
 parameter estadoJR = 6'd10;
+parameter estadoSLL = 6'd11;
+parameter estadoSLLV = 6'd12;
+parameter estadoSRA = 6'd13;
+parameter estadoSRAV = 6'd14;
+parameter estadoSRL = 6'd15;
 
 //opcodes
 parameter R_TYPE = 6'd0;
@@ -121,8 +127,9 @@ always @(posedge clk) begin
             PCSrc = 3'd0;
             WriteDataCtrl = 4'b1010;
             COUNTER = 3'd0;
-            ShifN = 1'd0;
-            ShifInput = 1'd0;
+            ShiftN = 2'd0;
+            ShiftInput = 1'd0;
+            shiftCtrl = 3'd0;
             rst_out = 1'd1;
         end
         else begin
@@ -140,8 +147,9 @@ always @(posedge clk) begin
             PCSrc = 3'd0;
             WriteDataCtrl = 4'b1010;
             COUNTER = 3'd0;
-            ShifN = 1'd0;
-            ShifInput = 1'd0;
+            ShiftN = 2'd0;
+            ShiftInput = 1'd0;
+            shiftCtrl = 3'd0;
             rst_out = 1'd1;
         end
     end
@@ -163,8 +171,9 @@ always @(posedge clk) begin
                     ALUControl = 3'b001;  ///
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;  ///
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                     if (COUNTER == 5'd2) begin
                         estados = intermFetchDecode;
@@ -192,8 +201,9 @@ always @(posedge clk) begin
                 PCSrc = 3'd0;  ///
                 WriteDataCtrl = 4'd0;
                 COUNTER = COUNTER + 1;
-                ShifN = 1'd0;
-                ShifInput = 1'd0;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
                 rst_out = 1'd0;
             end
 
@@ -214,8 +224,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end   
                 else if (COUNTER == 5'd5) begin
@@ -234,8 +245,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end      
                 else if (COUNTER == 5'd6) begin
@@ -264,6 +276,9 @@ always @(posedge clk) begin
                                 JR: begin
                                     estados = estadoJR;
                                 end
+                                SLL: begin
+                                    estados = estadoSLL;
+                                end
                             endcase
                         end
                     endcase
@@ -280,8 +295,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = 5'd0;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -303,8 +319,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -323,8 +340,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd5;  ///
                     COUNTER = 5'd0;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -346,8 +364,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -366,8 +385,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd5;  ///
                     COUNTER = 5'd0;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -388,8 +408,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -408,8 +429,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd5;  ///
                     COUNTER = 5'd0;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -431,8 +453,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -451,8 +474,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'b1001;  ///
                     COUNTER = 5'd0;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -470,11 +494,12 @@ always @(posedge clk) begin
                 RegWriteMUX = 2'd0;
                 MuxAddr = 3'd0;
                 ALUControl = 3'b000;
-                PCSrc = 3'b101;
+                PCSrc = 3'b101;  ///
                 WriteDataCtrl = 4'd0;
                 COUNTER = 5'd0;
-                ShifN = 1'd0;
-                ShifInput = 1'd0;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
                 rst_out = 1'd0;
             end
 
@@ -495,8 +520,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -515,8 +541,9 @@ always @(posedge clk) begin
                     PCSrc = 3'b000;  ///
                     WriteDataCtrl = 4'd0;
                     COUNTER = 5'd0;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -538,8 +565,9 @@ always @(posedge clk) begin
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd0;
                     COUNTER = COUNTER + 1;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -558,8 +586,273 @@ always @(posedge clk) begin
                     PCSrc = 3'b101;  ///
                     WriteDataCtrl = 4'd0;
                     COUNTER = 5'd0;
-                    ShifN = 1'd0;
-                    ShifInput = 1'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    rst_out = 1'd0;
+                end
+            end 
+
+            estadoSLL: begin
+                if (COUNTER == 5'd0) begin
+                    // dá load no registrador
+                    estados = estadoSLL;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;  ///
+                    ShiftInput = 1'd0;  ///
+                    shiftCtrl = 3'b001;  ///
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // faz o shift
+                    estados = estadoSLL;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;  ///
+                    ShiftInput = 1'd0;  ///
+                    shiftCtrl = 3'b010;  ///
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd2) begin
+                    // escreve no banco de registradores e volta pra fetch
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'b1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'b11;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'b0111;  ///
+                    COUNTER = 5'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;  ///
+                    rst_out = 1'd0;
+                end
+            end
+
+            estadoSLLV: begin
+                if (COUNTER == 5'd0) begin
+                    // dá load no registrador
+                    estados = estadoSLL;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'b10;  ///
+                    ShiftInput = 1'b1;  ///
+                    shiftCtrl = 3'b001;  ///
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // faz o shift
+                    estados = estadoSLL;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;  ///
+                    ShiftInput = 1'd0;  ///
+                    shiftCtrl = 3'b010;  ///
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd2) begin
+                    // escreve no banco de registradores e volta pra fetch
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'b1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'b11;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'b0111;  ///
+                    COUNTER = 5'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;  ///
+                    rst_out = 1'd0;
+                end
+            end
+
+            estadoSRA: begin
+                if (COUNTER == 5'd0) begin
+                    // dá load no registrador
+                    estados = estadoSLL;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'b00;  ///
+                    ShiftInput = 1'b0;  ///
+                    shiftCtrl = 3'b001;  ///
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // faz o shift
+                    estados = estadoSLL;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;  ///
+                    ShiftInput = 1'd0;  ///
+                    shiftCtrl = 3'b100;  ///
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd2) begin
+                    // escreve no banco de registradores e volta pra fetch
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'b1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'b11;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'b0111;  ///
+                    COUNTER = 5'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;  ///
+                    rst_out = 1'd0;
+                end
+            end
+
+            estadoSRAV: begin
+                if (COUNTER == 5'd0) begin
+                    // dá load no registrador
+                    estados = estadoSLL;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'b10;  ///
+                    ShiftInput = 1'b1;  ///
+                    shiftCtrl = 3'b001;  ///
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // faz o shift
+                    estados = estadoSLL;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;  ///
+                    ShiftInput = 1'd0;  ///
+                    shiftCtrl = 3'b100;  ///
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd2) begin
+                    // escreve no banco de registradores e volta pra fetch
+                    estados = fetch;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;
+                    ALUSrcB = 2'd0;
+                    RegWrite = 1'b1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'b11;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'b0111;  ///
+                    COUNTER = 5'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;  ///
                     rst_out = 1'd0;
                 end
             end

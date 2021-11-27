@@ -1,17 +1,17 @@
 module MuxNRegDesl (
-  input wire [1:0] ShifN,
-  input wire [15:0] addr_or_immed,
-  input wire [31:0] MemDR_out,
-  input wire [31:0] RegB_out,
+  input wire [1:0] ShiftN,
+  input wire [4:0] shamt,
+  input wire [4:0] FioNaoFunciona,
+  input wire [4:0] RT,
 
-  output reg [31:0] RegDeslInput
+  output reg [4:0] RegDeslN
 );
 
   always @(*) begin
-    RegDeslInput = ((ShifN[1]) ? (RegB_out) : ((ShifN[0]) ? MemDR_out : addr_or_immed));
+    RegDeslN = ((ShiftN[1]) ? (RT) : ((ShiftN[0]) ? FioNaoFunciona : shamt));
   end
 endmodule
 
-// 00 => addr_or_immed
-// 01 => MemDR_out
-// 10 => RegB_out
+// 00 => shamt
+// 01 => FioNaoFunciona
+// 10 => RT
