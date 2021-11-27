@@ -30,6 +30,7 @@ module cpu(
 
     wire [2:0] ULA_c; // ULA controller
     wire [2:0] shiftCtrl;
+    wire [1:0] storeOp;
 
     // Controllers for muxes
     wire [1:0] M_WREG;
@@ -66,7 +67,6 @@ module cpu(
     wire[31:0] ALU_out;
     wire[31:0] PC_out;
 
-    wire[31:0] MEM_in;
     wire[31:0] MEM_to_IR; 
     wire[31:0] RB_to_A; // Banco de registradores para o registrador A
     wire[31:0] RB_to_B; // Banco de registradores para o registrador B
@@ -110,6 +110,13 @@ module cpu(
     wire [31:0] HIMux_out;
     wire [31:0] LOMux_out;
 
+    wire [31:0] storeOut;
+	Store StoreBox(
+        storeOp, 
+        RegB_out, 
+        MemDR_out, 
+        storeOut);
+
     Registrador PC_(
         clk,
         reset,
@@ -132,7 +139,7 @@ module cpu(
         clk,
         MEM_wr,
         MEM_to_IR,
-        MEM_in 
+        storeOut 
     );
 
     // TODO signExtende 8 -> 32
@@ -386,6 +393,7 @@ module cpu(
             DIVA,
             DIVB,
             MemDR_w,
+            storeOp,
             reset_out
     );
     
