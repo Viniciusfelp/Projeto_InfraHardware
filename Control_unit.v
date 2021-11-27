@@ -89,6 +89,7 @@ parameter estadoSW = 6'd25;
 parameter estadoBNE = 6'd26;
 parameter estadoBGT = 6'd27;
 parameter estadoBLE = 6'd28;
+parameter estadoLUI = 6'd29;
 
 //opcodes
 parameter R_TYPE = 6'd0;
@@ -110,6 +111,7 @@ parameter SLTI = 6'd10;
 parameter SW = 6'd43;
 parameter J = 6'd2;
 parameter JAL = 6'd3;
+
 
 //functs
 parameter ADD = 6'd32;
@@ -205,9 +207,9 @@ always @(posedge clk) begin
             fetch: begin
                 if (COUNTER == 5'd0) begin
                     estados = fetch;
-                    PCWrite = 1'd1;
+                    PCWrite = 1'd0;  ///
                     PCWriteCond = 1'd0;
-                    MemWR = 1'd0;  
+                    MemWR = 1'd0;  ///
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
                     ALUSrcB = 2'b01;  ///
@@ -217,7 +219,7 @@ always @(posedge clk) begin
                     MuxAddr = 3'd0;   ///
                     ALUControl = 3'b001;  ///
                     PCSrc = 3'd0;
-                    WriteDataCtrl = 4'd0;  ///
+                    WriteDataCtrl = 4'd0;
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
@@ -418,6 +420,9 @@ always @(posedge clk) begin
                         end
                         SW: begin
                             estados = estadoSW;
+                        end
+                        LUI: begin
+                            estados = estadoLUI;
                         end
                     endcase
                     PCWrite = 1'd0;
@@ -2790,7 +2795,7 @@ always @(posedge clk) begin
                     ALUControl = 3'b000;    
                     PCSrc = 3'd0;
                     WriteDataCtrl = 4'd3; ///
-                    COUNTER = COUNTER + 1;
+                    COUNTER = 5'd0;
                     ShiftN = 2'd0;
                     ShiftInput = 1'd0;
                     shiftCtrl = 3'd0;
@@ -2806,6 +2811,39 @@ always @(posedge clk) begin
                     AB_w = 0;
                     rst_out = 1'd0;
                 end
+            end
+
+            estadoLUI: begin
+                // faz o shift left e já guarda no registrador, voltando pra fetch em seguida
+                estados = fetch;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd0;      
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b00;  
+                ALUSrcB = 2'b00;  
+                RegWrite = 1'b1;   ///
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'b00; ///
+                MuxAddr = 3'd0;     
+                ALUControl = 3'b000;    
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'b1000;  ///
+                COUNTER = 5'd0;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0;
+                LOMuxCtrl = 1'd0;
+                HI_w = 1'd0;
+                LO_w = 1'd0;
+                DIVA = 1'd0;
+                DIVB = 1'd0;
+                MemDR_w = 1'd0;
+                BranchCtrl = 2'd0;
+                storeOp = 2'd0;
+                AB_w = 0;
+                rst_out = 1'd0;
             end
         endcase
     end

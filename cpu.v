@@ -143,8 +143,8 @@ module cpu(
         MEM_addr,
         clk,
         MEM_wr,
-        MEM_to_IR,
-        storeOut 
+        storeOut,
+        MEM_to_IR
     );
 
     // TODO signExtende 8 -> 32
@@ -205,6 +205,10 @@ module cpu(
     wire[31:0] MemDR_outLB = {24'd0, MemDR_out[7:0]}; // Valor a ser carregado em um load byte
     wire[31:0] MemDR_outLH = {16'd0, MemDR_out[15:0]}; // Valor a ser carregado em um load half
 
+    ShiftLeft16 ShiftLeft16_ (
+        SXTND_out,
+        ShiftL16_out
+    );
     //MUXWRITEDATA define o valor de saida do multiplexador do write data
     MuxWriteData M_WD_(
         M_WD,
@@ -216,7 +220,7 @@ module cpu(
         ALU_out,
         LO_out,
         RegDesl_out, //Saida do registrador de deslocamento
-        ShiftL16_out, // implementar shiftLeft16
+        ShiftL16_out,
         Lt_out, // Transformar Lt de 1 bit para 32
         WD_out
     );

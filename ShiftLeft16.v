@@ -1,5 +1,5 @@
 module ShiftLeft16(
-  input  wire [15:0] imediato,
+  input  wire [31:0] imediato,
 
   output reg [31:0] saidaShiftLeft16
 );
