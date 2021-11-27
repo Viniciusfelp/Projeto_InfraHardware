@@ -16,6 +16,7 @@ module Control_unit (
     // Sinais de controle
 
             output reg PCWrite,
+            output reg PCWriteCond,
             output reg MemWR,
             output reg IRWrite,
             output reg RegWrite,
@@ -71,6 +72,7 @@ parameter estadoSLLV = 6'd12;
 parameter estadoSRA = 6'd13;
 parameter estadoSRAV = 6'd14;
 parameter estadoSRL = 6'd15;
+parameter estadoBEQ = 6'd16;
 
 //opcodes
 parameter R_TYPE = 6'd0;
@@ -121,6 +123,7 @@ always @(posedge clk) begin
         if (estados != resetado) begin
             estados = resetado;
             PCWrite = 1'd0;
+            PCWriteCond = 1'd0;
             MemWR = 1'd0;
             IRWrite = 1'd1;
             ALUSrcA = 2'd0;
@@ -148,6 +151,7 @@ always @(posedge clk) begin
         else begin
             estados = resetado;
             PCWrite = 1'd0;
+            PCWriteCond = 1'd0;
             MemWR = 1'd0;
             IRWrite = 1'd1;
             ALUSrcA = 2'd0;
@@ -179,6 +183,7 @@ always @(posedge clk) begin
                     // calcula PC+4 (mas não grava ainda) e lê memória
                     estados = fetch;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd1;  ///
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
@@ -214,6 +219,7 @@ always @(posedge clk) begin
                 // grava PC+4 no PC e escreve no IR
                 estados = decode;
                 PCWrite = 1'd1;  ///
+                PCWriteCond = 1'd0;
                 MemWR = 1'd0;  ///
                 IRWrite = 1'd1;  ///
                 ALUSrcA = 2'd0;  ///
@@ -242,7 +248,8 @@ always @(posedge clk) begin
                 if (COUNTER == 5'd4) begin
                     // calcula o endereço de branch e lê no banco de registradores
                     estados = decode;
-                    PCWrite = 1'd0;  ///
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;  ///
                     MemWR = 1'd0;  ///
                     IRWrite = 1'd0;  ///
                     ALUSrcA = 2'd0;  ///
@@ -270,6 +277,7 @@ always @(posedge clk) begin
                     // escreve no ALUOut e nos A e B
                     estados = decode;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0; 
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -322,10 +330,29 @@ always @(posedge clk) begin
                                 SLL: begin
                                     estados = estadoSLL;
                                 end
+                                SLLV: begin
+                                    estados = estadoSLLV;
+                                end
+                                SLT: begin
+                                    estados = estadoSLT;
+                                end
+                                SRA: begin
+                                    estados = estadoSRA;
+                                end
+                                SRAV: begin
+                                    estados = estadoSRAV;
+                                end
+                                SRL: begin
+                                    estados = estadoSRL;
+                                end
                             endcase
+                        end
+                        BEQ: begin
+                            estados = estadoBEQ
                         end
                     endcase
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0; 
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -356,6 +383,7 @@ always @(posedge clk) begin
                     // realiza a soma
                     estados = estadoADD;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd2;  ///
@@ -382,7 +410,8 @@ always @(posedge clk) begin
                 else if (COUNTER == 5'd1) begin
                     // guarda no banco de registradores e volta pro estado de fetch
                     estados = fetch;
-                    PCWrite = 1'd0; 
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0; 
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
@@ -413,6 +442,7 @@ always @(posedge clk) begin
                     // realiza a subtração
                     estados = estadoSUB;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd2;  ///
@@ -439,7 +469,8 @@ always @(posedge clk) begin
                 else if (COUNTER == 5'd1) begin
                     // guarda no banco de registradores e volta pro estado de fetch
                     estados = fetch;
-                    PCWrite = 1'd0; 
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0; 
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
@@ -469,6 +500,7 @@ always @(posedge clk) begin
                     // realiza o AND
                     estados = estadoAND;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd2;  ///
@@ -495,7 +527,8 @@ always @(posedge clk) begin
                 else if (COUNTER == 5'd1) begin
                     // guarda no banco de registradores e volta pro estado de fetch
                     estados = fetch;
-                    PCWrite = 1'd0; 
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0; 
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
@@ -526,6 +559,7 @@ always @(posedge clk) begin
                     // realiza a comparação
                     estados = estadoSLT;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd2;  ///
@@ -552,7 +586,8 @@ always @(posedge clk) begin
                 else if (COUNTER == 5'd1) begin
                     // guarda no banco de registradores e volta pro estado de fetch
                     estados = fetch;
-                    PCWrite = 1'd0; 
+                    PCWrite = 1'd0;
+                    PCWriteCond = 1'd0; 
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
@@ -582,6 +617,7 @@ always @(posedge clk) begin
                 //guarda em PC e volta pra fetch em seguida
                 estados = fetch;
                 PCWrite = 1'd1; ///
+                PCWriteCond = 1'd0;
                 MemWR = 1'd0;
                 IRWrite = 1'd0;
                 ALUSrcA = 2'd0; 
@@ -591,7 +627,7 @@ always @(posedge clk) begin
                 RegWriteMUX = 2'd0;
                 MuxAddr = 3'd0;
                 ALUControl = 3'b000;
-                PCSrc = 3'b101;  ///
+                PCSrc = 3'b100;  ///
                 WriteDataCtrl = 4'd0;
                 COUNTER = 5'd0;
                 ShiftN = 2'd0;
@@ -611,6 +647,7 @@ always @(posedge clk) begin
                     // realiza PC - 4
                     estados = estadoBREAK;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'b00;  ///
@@ -637,7 +674,8 @@ always @(posedge clk) begin
                 else if (COUNTER == 5'd1) begin
                     // guarda em PC e volta pra fetch
                     estados = fetch;
-                    PCWrite = 1'b1; ///
+                    PCWrite = 1'd1; ///
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
@@ -668,6 +706,7 @@ always @(posedge clk) begin
                     // dá hold em A
                     estados = estadoJR;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'b10;  ///
@@ -694,7 +733,8 @@ always @(posedge clk) begin
                 else if (COUNTER == 5'd1) begin
                     // guarda em PC e volta pra fetch
                     estados = fetch;
-                    PCWrite = 1'b1; ///
+                    PCWrite = 1'd1; ///
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;  ///
@@ -725,6 +765,7 @@ always @(posedge clk) begin
                     // dá load no registrador
                     estados = estadoSLL;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -752,6 +793,7 @@ always @(posedge clk) begin
                     // faz o shift
                     estados = estadoSLL;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -779,6 +821,7 @@ always @(posedge clk) begin
                     // escreve no banco de registradores e volta pra fetch
                     estados = fetch;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -809,6 +852,7 @@ always @(posedge clk) begin
                     // dá load no registrador
                     estados = estadoSLLV;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -836,6 +880,7 @@ always @(posedge clk) begin
                     // faz o shift
                     estados = estadoSLLV;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -863,6 +908,7 @@ always @(posedge clk) begin
                     // escreve no banco de registradores e volta pra fetch
                     estados = fetch;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -893,6 +939,7 @@ always @(posedge clk) begin
                     // dá load no registrador
                     estados = estadoSRA;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -920,6 +967,7 @@ always @(posedge clk) begin
                     // faz o shift
                     estados = estadoSRA;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -947,6 +995,7 @@ always @(posedge clk) begin
                     // escreve no banco de registradores e volta pra fetch
                     estados = fetch;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -977,6 +1026,7 @@ always @(posedge clk) begin
                     // dá load no registrador
                     estados = estadoSRAV;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -1004,6 +1054,7 @@ always @(posedge clk) begin
                     // faz o shift
                     estados = estadoSRAV;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -1031,6 +1082,7 @@ always @(posedge clk) begin
                     // escreve no banco de registradores e volta pra fetch
                     estados = fetch;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -1061,6 +1113,7 @@ always @(posedge clk) begin
                     // dá load no registrador
                     estados = estadoSRL;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -1088,6 +1141,7 @@ always @(posedge clk) begin
                     // faz o shift
                     estados = estadoSRL;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -1115,6 +1169,7 @@ always @(posedge clk) begin
                     // escreve no banco de registradores e volta pra fetch
                     estados = fetch;
                     PCWrite = 1'd0;
+                    PCWriteCond = 1'd0;
                     MemWR = 1'd0;
                     IRWrite = 1'd0;
                     ALUSrcA = 2'd0;
@@ -1140,7 +1195,65 @@ always @(posedge clk) begin
                 end
             end
 
-
+        estadoBEQ: begin
+            if (COUNTER == 5'd0) begin
+                // faz o cálculo da igualdade através da subtração (se A-B=0 -> A=B)
+                estados = BEQ;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd0;
+                MemWR = 1'd0;
+                IRWrite = 1'd0;
+                ALUSrcA = 2'b10;  ///
+                ALUSrcB = 2'b00;  ///
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd0;
+                ALUControl = 3'b010;  ///
+                PCSrc = 3'd0;
+                WriteDataCtrl = 4'd0;
+                COUNTER = COUNTER + 1;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0,
+                LOMuxCtrl = 1'd0,
+                HI_w = 1'd0,
+                LO_w = 1'd0,
+                DIVA = 1'd0,
+                DIVB = 1'd0,
+                rst_out = 1'd0; 
+            end
+            else if (COUNTER = 5'd1) begin
+                // escreve em PC o endereço do branch
+                estados = BEQ;
+                PCWrite = 1'd0;
+                PCWriteCond = 1'd1;  ///
+                // TODO falta branch control e seu mux
+                MemWR = 1'd0;
+                IRWrite = 1'd0;
+                ALUSrcA = 2'd0;
+                ALUSrcB = 2'd0;
+                RegWrite = 1'b0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd0;
+                ALUControl = 3'b000;
+                PCSrc = 3'd1;
+                WriteDataCtrl = 4'd0;
+                COUNTER = 5'd0;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0,
+                LOMuxCtrl = 1'd0,
+                HI_w = 1'd0,
+                LO_w = 1'd0,
+                DIVA = 1'd0,
+                DIVB = 1'd0,
+                rst_out = 1'd0;
+            end
+        end
         endcase
     end
 end

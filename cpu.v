@@ -14,6 +14,7 @@ module cpu(
 
     // Controllers with 1 bit
     wire PC_w;
+    wire PCWriteCond;
     wire MEM_wr;
     wire IR_w;
     wire RB_w;
@@ -112,7 +113,7 @@ module cpu(
     Registrador PC_(
         clk,
         reset,
-        PC_w,
+        NovoPcWrite,
         PC_in,
         PC_out
     );
@@ -280,6 +281,8 @@ module cpu(
         Lt
     );
     
+    wire NovoPcWrite == PC_w || (PCWriteCond && Zero);
+
     Registrador ALUOut_(
         clk,
         reset,
@@ -361,6 +364,7 @@ module cpu(
             OPCODE,
             funct,
             PC_w,
+            PCWriteCond,
             MEM_wr,
             IR_w,
             RB_w,
