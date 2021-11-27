@@ -41,6 +41,7 @@ module Control_unit (
             output reg LO_w,
             output reg DIVA,
             output reg DIVB,
+            output reg MemDR_w,
     
     // reset especial
 
@@ -71,6 +72,10 @@ parameter estadoSLLV = 6'd12;
 parameter estadoSRA = 6'd13;
 parameter estadoSRAV = 6'd14;
 parameter estadoSRL = 6'd15;
+parameter estadoJ = 6'd18;
+parameter estadoADDI = 6'd19;
+parameter estadoADDIU = 6'd20;
+parameter estadoLB = 6'd21;
 
 //opcodes
 parameter R_TYPE = 6'd0;
@@ -142,6 +147,7 @@ always @(posedge clk) begin
             LO_w = 1'd0,
             DIVA = 1'd0,
             DIVB = 1'd0,
+            MemDR_w = 1'd0;
             rst_out = 1'd1;
             
         end
@@ -169,6 +175,7 @@ always @(posedge clk) begin
             LO_w = 1'd0,
             DIVA = 1'd0,
             DIVB = 1'd0,
+            MemDR_w = 1'd0;
             rst_out = 1'd1;
         end
     end
@@ -199,6 +206,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                     if (COUNTER == 5'd2) begin
                         estados = intermFetchDecode;
@@ -235,6 +243,7 @@ always @(posedge clk) begin
                 LO_w = 1'd0,
                 DIVA = 1'd0,
                 DIVB = 1'd0,
+                MemDR_w = 1'd0;
                 rst_out = 1'd0;
             end
 
@@ -264,6 +273,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end   
                 else if (COUNTER == 5'd5) begin
@@ -291,6 +301,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end      
                 else if (COUNTER == 5'd6) begin
@@ -322,6 +333,18 @@ always @(posedge clk) begin
                                 SLL: begin
                                     estados = estadoSLL;
                                 end
+                                J: begin
+                                    estados = estadoJ;
+                                end
+                                ADDI: begin
+                                    estados = estadoADDI;
+                                end
+                                ADDIU: begin
+                                    estados = estadoADDIU;
+                                end
+                                LB: begin
+                                    estados = estadoLB;
+                                end
                             endcase
                         end
                     endcase
@@ -347,6 +370,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -377,6 +401,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -404,6 +429,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -434,6 +460,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -461,6 +488,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -490,6 +518,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -517,6 +546,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -547,6 +577,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -574,6 +605,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -603,6 +635,7 @@ always @(posedge clk) begin
                 LO_w = 1'd0,
                 DIVA = 1'd0,
                 DIVB = 1'd0,
+                MemDR_w = 1'd0;
                 rst_out = 1'd0;
             end
 
@@ -632,6 +665,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -659,6 +693,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -689,6 +724,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -716,6 +752,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end 
@@ -746,6 +783,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -773,6 +811,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -800,6 +839,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -830,6 +870,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -857,6 +898,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -884,6 +926,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -914,6 +957,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -941,6 +985,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -968,6 +1013,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -998,6 +1044,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -1025,6 +1072,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -1052,6 +1100,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
@@ -1082,6 +1131,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd1) begin
@@ -1109,6 +1159,7 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
                 else if (COUNTER == 5'd2) begin
@@ -1136,10 +1187,190 @@ always @(posedge clk) begin
                     LO_w = 1'd0,
                     DIVA = 1'd0,
                     DIVB = 1'd0,
+                    MemDR_w = 1'd0;
                     rst_out = 1'd0;
                 end
             end
 
+            //Jump
+            estadoJ: begin
+                //muda o valor do pc para o do jump
+                estados = fetch;
+                PCWrite = 1'd1; ///
+                MemWR = 1'd0;
+                IRWrite = 1'd0;
+                ALUSrcA = 2'd0; 
+                ALUSrcB = 2'd0;
+                RegWrite = 1'd0;
+                ALUOut_w = 1'd0;
+                RegWriteMUX = 2'd0;
+                MuxAddr = 3'd0;
+                ALUControl = 3'b000;
+                PCSrc = 3'b010;  ///
+                WriteDataCtrl = 4'd0;
+                COUNTER = 5'd0;
+                ShiftN = 2'd0;
+                ShiftInput = 1'd0;
+                shiftCtrl = 3'd0;
+                HIMuxCtrl = 1'd0,
+                LOMuxCtrl = 1'd0,
+                HI_w = 1'd0,
+                LO_w = 1'd0,
+                DIVA = 1'd0,
+                DIVB = 1'd0,
+                MemDR_w = 1'd0;
+                rst_out = 1'd0;
+            end
+
+            estadoADDI: begin
+               if (COUNTER == 5'd0) begin
+                    // realiza a soma com o imediato
+                    estados = estadoADDI;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b10;  ///
+                    ALUSrcB = 2'b10;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b001;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
+                    MemDR_w = 1'd0;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1 and Of == 0) begin
+                    // guarda no banco de registradores e volta pro estado de fetch
+                    estados = fetch;
+                    PCWrite = 1'd0; 
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd3;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd5;  ///
+                    COUNTER = 5'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
+                    MemDR_w = 1'd0;
+                    rst_out = 1'd0;
+                end 
+                //else if(Of == 1) overflow TODO
+            end
+
+            estadoADDIU: begin
+                if (COUNTER == 5'd0) begin
+                    // realiza a soma com imediato
+                    estados = estadoADDIU;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b10;  ///
+                    ALUSrcB = 2'b10;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b001;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
+                    MemDR_w = 1'd0;
+                    rst_out = 1'd0;
+                end
+                else if (COUNTER == 5'd1) begin
+                    // guarda no banco de registradores e volta pro estado de fetch
+                    estados = fetch;
+                    PCWrite = 1'd0; 
+                    MemWR = 1'd0;
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'd0;  ///
+                    ALUSrcB = 2'd0;  ///
+                    RegWrite = 1'd1;  ///
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd3;  ///
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  ///
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd5;  ///
+                    COUNTER = 5'd0;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
+                    MemDR_w = 1'd0;
+                    rst_out = 1'd0;
+                end 
+            end
+
+            estadoLB: begin
+                if (COUNTER == 5'd0) begin
+                    // realiza a soma com imediato
+                    estados = estadoLB;
+                    PCWrite = 1'd0;
+                    MemWR = 1'd0;     ///
+                    IRWrite = 1'd0;
+                    ALUSrcA = 2'b10;  ///
+                    ALUSrcB = 2'b10;  ///
+                    RegWrite = 1'd0;
+                    ALUOut_w = 1'd0;
+                    RegWriteMUX = 2'd0;  
+                    MuxAddr = 3'd0;
+                    ALUControl = 3'b000;  
+                    PCSrc = 3'd0;
+                    WriteDataCtrl = 4'd0;
+                    COUNTER = COUNTER + 1;
+                    ShiftN = 2'd0;
+                    ShiftInput = 1'd0;
+                    shiftCtrl = 3'd0;
+                    HIMuxCtrl = 1'd0,
+                    LOMuxCtrl = 1'd0,
+                    HI_w = 1'd0,
+                    LO_w = 1'd0,
+                    DIVA = 1'd0,
+                    DIVB = 1'd0,
+                    MemDR_w = 1'd1;
+                    rst_out = 1'd0;
+                end
+            end
 
         endcase
     end

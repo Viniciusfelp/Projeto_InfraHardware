@@ -381,6 +381,7 @@ module cpu(
             LO_w,
             DIVA,
             DIVB,
+            MemDR_w,
             reset_out
     );
     
